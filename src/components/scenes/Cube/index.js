@@ -1,0 +1,1 @@
+export { default as CubeScene } from './CubeScene.js'

@@ -1,9 +1,9 @@
 {
-  "name": "lower-case-dashed-name-of-project",
-  "repository": "REPOSITORY-NAME-AS-IT-APPEARS-IN-GITHUB-URL",
+  "name": "bullet-dodging-game",
+  "repository": "COS426-Final",
   "version": "0.1.0",
-  "title": "PROJECT TITLE HERE",
-  "description": "SHORT DESCRIPTION OF PROJECT HERE. ONE TO TWO SENTENCES MAX",
+  "title": "Sprite-based Bullet Hell",
+  "description": "Dodge bullets, beat boss",
   "keywords": [
     "Princeton",
     "graphics",
