@@ -6,20 +6,22 @@
  * handles window resizes.
  *
  */
-import { WebGLRenderer, PerspectiveCamera, Vector3, BoxGeometry, Mesh, MeshBasicMaterial, Box3 } from 'three';
+import { WebGLRenderer, PerspectiveCamera, Vector3, BoxGeometry, Mesh, MeshBasicMaterial, Box3, Plane, Raycaster,
+		Vector2 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { SeedScene, CubeScene } from 'scenes';
+import { SeedScene, CubeScene, RoomScene } from 'scenes';
 
 // Initialize core ThreeJS components
 // const scene = new SeedScene();
-const scene = new CubeScene();
+// const scene = new CubeScene();
+const scene = new RoomScene();
 const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
 
 // Set up camera
-// camera.position.set(6, 3, -10);
-camera.position.set(0, 0, -10);
-camera.lookAt(new Vector3(0, 0, 0));
+camera.position.set(0, -10, -5);
+// camera.position.set(0, 0, -10);
+// camera.lookAt(new Vector3(0, 0, 0));
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -43,13 +45,20 @@ var rightPressed = false;
 var upPressed = false;
 var downPressed = false;
 
-// TEST
+// Sets up the mouse position variables
+var mouseX;
+var mouseY;
+
+// Sets up the player object
 var EPS = 0.1
 var geo = new BoxGeometry(0.5, 0.5, 0.5);
-var mat = new MeshBasicMaterial({color: 0x00ff00});
+var mat = new MeshBasicMaterial({color: 0xdeadbeef});
 var player = new Mesh(geo, mat);
 player.geometry.computeBoundingBox();
 scene.add(player);
+
+// Add this to player class later
+var direction = new Vector3(0, 1, 0);
 
 const detectWallCollisions = (minPoint, maxPoint) => {
 	let noCollisions = true;
@@ -111,6 +120,9 @@ const onAnimationFrameHandler = (timeStamp) => {
     		player.translateY(-0.1);
     	}
     }
+    let temp = player.position.clone().sub(new Vector3(0, 10, 5));
+    // camera.position.set(temp.x, temp.y, temp.z);
+    // camera.lookAt(player.position.clone());
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
@@ -125,8 +137,41 @@ const windowResizeHandler = () => {
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
 
+const mousemoveHandler = (event) => {
+	// var plane = new Plane(new Vector3(0, 0, 1), 0);
+	// var raycaster = new Raycaster();
+	// var intersection = new Vector3();
+
+	// mouseX = ( event.clientX / window.innerWidth ) * 2 - 1;
+	// mouseY = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+	// raycaster.setFromCamera(new Vector2(mouseX, mouseY), camera);
+	// raycaster.ray.intersectPlane(plane, intersection);
+
+	// // player.position.x = intersection.x;
+	// // player.position.y = intersection.y;
+	// let newDir = new Vector3(intersection.x, intersection.y, -1000);
+	// let angle = direction.angleTo(newDir);
+
+	// let temp = direction.multiplyScalar(-1);
+	// let angle2 = direction.angleTo(newDir);
+
+	// // player.rotateZ(angle);
+	// player.lookAt(newDir);
+	// direction =  newDir;
+}
+
+const mousedownHandler = (event) => {
+	// player.position.y = mouseY;
+	// console.log(mouseX, mouseY, player.position);
+	// console.log(player.worldToLocal(new Vector3(mouseX, mouseY, 0)));
+	// player.position.x = -mouseX;
+	// player.rotateZ(Math.PI / 4);
+	// player.lookAt(new Vector3(0, 1, 0));
+}
+
 // Moves whole scene
-const moveObject = (event) => {
+const keydownHandler = (event) => {
 	if (event.key == "s") {
 		downPressed = true;
 	}
@@ -141,9 +186,6 @@ const moveObject = (event) => {
 	}
 };
 const keyupHandler = (event) => {
-	// player.geometry.computeBoundingBox(0);
-	// console.log(player.localToWorld(player.geometry.boundingBox.min));
-	// console.log(scene.children[0].position, player.position);
 	if (event.key == "s") {
 		downPressed = false;
 	}
@@ -157,5 +199,7 @@ const keyupHandler = (event) => {
 		leftPressed = false;
 	}
 };
-window.addEventListener('keydown', moveObject, false);
+window.addEventListener('keydown', keydownHandler, false);
 window.addEventListener('keyup', keyupHandler, false);
+window.addEventListener('mousedown', mousedownHandler, false);
+window.addEventListener('mousemove', mousemoveHandler, false);
