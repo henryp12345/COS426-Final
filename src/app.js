@@ -7,7 +7,7 @@
  *
  */
 import { WebGLRenderer, PerspectiveCamera, Vector3, BoxGeometry, Mesh, MeshBasicMaterial, Box3, Plane, Raycaster,
-		Vector2 } from 'three';
+		Vector2, BoxHelper } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene, CubeScene, RoomScene } from 'scenes';
 import Player from './components/objects/Player/Player';
@@ -56,28 +56,37 @@ var geo = new BoxGeometry(0.5, 0.5, 0.5);
 var mat = new MeshBasicMaterial({color: 0xdeadbeef});
 // var player = new Mesh(geo, mat);
 var player = new Player(); 
+// console.log(player);
 player.computeBoundingBox();
 scene.add(player);
-// player.sprite.position.add(new Vector3(0, 0, 0.1));
-// console.log(player);
+
 
 // Add this to player class later
 var direction = new Vector3(0, 1, 0);
 
-const detectWallCollisions = (minPoint, maxPoint) => {
+const detectWallCollisions = (dir) => {
 	let noCollisions = true;
     for (let i = 0; i < scene.children.length; i++) {
 		if (scene.children[i] === player) {
 			continue;
 		}
-		// player.geometry.computeBoundingBox();
+
 		player.computeBoundingBox();
     	scene.children[i].geometry.computeBoundingBox();
-		let minW = scene.children[i].localToWorld(scene.children[i].geometry.boundingBox.min.clone());
-		let maxW = scene.children[i].localToWorld(scene.children[i].geometry.boundingBox.max.clone());
-		let boxW = new Box3(minW, maxW);
-		// console.log(boxW, minPoint, maxPoint);
-		if (boxW.containsPoint(minPoint) || boxW.containsPoint(maxPoint)) {
+
+		let sceneBox = new Box3().setFromObject(scene.children[i]);
+		let playerBox = player.boundingBox.clone();
+		if (dir == 'left') {
+			playerBox.max.add(new Vector3(0.1, 0, 0));
+		} else if (dir == 'right') {
+			playerBox.min.add(new Vector3(-0.1, 0, 0));
+		} else if (dir ==  'up') {
+			playerBox.max.add(new Vector3(0, 0.1, 0));
+		} else if (dir == 'down') {
+			playerBox.min.add(new Vector3(0, -0.1, 0));
+		}
+
+		if (sceneBox.intersectsBox(playerBox)) {
 			noCollisions = false;
 		}
 	}
@@ -92,46 +101,28 @@ const onAnimationFrameHandler = (timeStamp) => {
     var minPoint;
     var maxPoint;
     var noCollisions = true;
-    // var max = player.localToWorld(player.geometry.boundingBox.max.clone());
-	// var min = player.localToWorld(player.geometry.boundingBox.min.clone());
-	player.computeBoundingBox();
-	var max = player.localToWorld(player.boundingBox.max.clone());
-    var min = player.localToWorld(player.boundingBox.min.clone());
     if (leftPressed) {
-    	minPoint = new Vector3(max.x + 0.1, min.y, max.z);
-    	maxPoint = new Vector3(max.x + 0.1, max.y, max.z);
-		noCollisions = detectWallCollisions(minPoint, maxPoint);
+		noCollisions = detectWallCollisions('left');
 		if (noCollisions) {
 			player.translateX(0.1);
-			// player.sprite.center.x += 0.1;
 		}
     }
     if (rightPressed) {
-    	minPoint = new Vector3(min.x - 0.1, min.y, max.z);
-    	maxPoint = new Vector3(min.x - 0.1, max.y, max.z);
-    	noCollisions = detectWallCollisions(minPoint, maxPoint);
-    	// console.log(min, max);
+    	noCollisions = detectWallCollisions('right');
 		if (noCollisions) {
 			player.translateX(-0.1);
-			// player.sprite.center.x -= 0.1;
 		}
     }
     if (upPressed) {
-    	minPoint = new Vector3(min.x, max.y + 0.1, max.z);
-    	maxPoint = new Vector3(max.x, max.y + 0.1, max.z);
-    	noCollisions = detectWallCollisions(minPoint, maxPoint);
+    	noCollisions = detectWallCollisions('up');
     	if (noCollisions) {
     		player.translateY(0.1);
-    		// player.sprite.center.y += 0.1;
     	}
     }
     if (downPressed) {
-    	minPoint = new Vector3(min.x, min.y - 0.1, max.z);
-    	maxPoint = new Vector3(max.x, min.y - 0.1, max.z);
-    	noCollisions = detectWallCollisions(minPoint, maxPoint);
+    	noCollisions = detectWallCollisions('down');
     	if (noCollisions) {
     		player.translateY(-0.1);
-    		// player.sprite.center.y -= 0.1;
     	}
     }
     // let temp = player.position.clone().sub(new Vector3(0, 10, 5));
@@ -176,6 +167,8 @@ const mousemoveHandler = (event) => {
 }
 
 const mousedownHandler = (event) => {
+	// var box = new BoxHelper(player);
+	// scene.add(box);
 	// player.position.y = mouseY;
 	// console.log(mouseX, mouseY, player.position);
 	// console.log(player.worldToLocal(new Vector3(mouseX, mouseY, 0)));
