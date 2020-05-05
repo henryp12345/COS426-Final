@@ -1,31 +1,30 @@
 import { Group, Sprite, SpriteMaterial, TextureLoader, Vector3, Vector2, Object3D } from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import MODEL from './flower.gltf';
 
-class Player{
-    constructor() {
+class Player extends Group{
+    constructor(parent) {
+        super();
+        this.items;
 
-        var spriteMap = new TextureLoader().load( "textures/Sprites/Wizard.png" );
-        var spriteMaterial = new SpriteMaterial( { map: spriteMap } );
-        var sprite = new Sprite( spriteMaterial );
-        this.sprite = sprite;
-        var scale = 1;
-        this.scale = scale;
-        sprite.scale.set(scale, scale, 1);
-        var boundingBox = {min: new Vector3(0, 0, 0), max: new Vector3(0, 0, 0)};
-        this.boundingBox = boundingBox;
-        this.computeBoundingBox();
+        // Load object
+        const loader = new GLTFLoader();
+        this.name = 'flower';
+        loader.load(MODEL, (gltf) => {
+        this.add(gltf.scene);
+        });
+        
     }
 
-    computeBoundingBox(boundingBox) {
-        var centerX = this.sprite.center.x;
-        var centerY = this.sprite.center.y;
-        var centerZ = this.sprite.center.z;
-        this.boundingBox.min.x = centerX - this.scale / 2;
-        this.boundingBox.min.y = centerY - this.scale / 2;
-        this.boundingBox.min.z = centerZ;
-        this.boundingBox.max.x = centerX + this.scale / 2;
-        this.boundingBox.max.y = centerY + this.scale / 2;
-        this.boundingBox.max.z = centerZ;
+    computeBoundingBoxes() {
+        let children = this.children();
+        let boundingBoxes = [];
+        for (i = 0; i < children.length; i++) {
+            boundingBoxes.push(children[i].geometries)
+        }
     }
+    
+
 }
 
 export default Player;
