@@ -66,7 +66,8 @@ scene.add(player);
 var direction = new Vector3(0, 1, 0);
 
 // Projectile array;
-var projectiles = [];
+var friendlyProjectiles = [];
+var enemyProjectiles = [];
 
 const detectWallCollisions = (minPoint, maxPoint) => {
 	let noCollisions = true;
@@ -93,8 +94,16 @@ const onAnimationFrameHandler = (timeStamp) => {
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
 
-	if (projectiles.length != 0) {
-		projectiles.forEach(updateProjectiles());
+	for (let i = 0; i < friendlyProjectiles.length; i++) {
+		friendlyProjectiles[i].updatePosition();
+		friendlyProjectiles[i].checkPlayerCollision();
+		friendlyProjectiles[i].checkWallCollision(scene);
+	}
+	
+	for (let i = 0; i < enemyProjectiles.length; i++) {
+		enemyProjectiles[i].updatePosition();
+		enemyProjectiles[i].checkPlayerCollision();
+		enemyProjectiles[i].checkWallCollision(scene);
 	}
 	
 
@@ -161,10 +170,6 @@ const windowResizeHandler = () => {
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
 
-const updateProjectiles = (item, index) => {
-	item.mesh.position.add(item.velocity);
-}
-
 const mousemoveHandler = (event) => {
 	// var plane = new Plane(new Vector3(0, 0, 1), 0);
 	// var raycaster = new Raycaster();
@@ -197,15 +202,9 @@ const mousedownHandler = (event) => {
 	// player.rotateZ(Math.PI / 4);
 	// player.lookAt(new Vector3(0, 1, 0));
 
-	var projectile = new Projectile();
-	projectiles.push(projectile);
-	var geo = new SphereGeometry(2, 8, 6);
-    var mat = new MeshBasicMaterial({color: 0xdeadbeef});
-	var mesh = new Mesh(geo, mat);
-	console.log(projectile);
-	mesh.position.add(new Vector3 (3 , 3 , 0));
-	console.log(mesh);
-	scene.add(mesh);
+	var projectile = new Projectile(player.);
+	friendlyProjectiles.push(projectile);	
+	scene.add(projectile.mesh);
 }
 
 // Moves whole scene
