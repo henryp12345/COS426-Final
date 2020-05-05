@@ -14,8 +14,8 @@ import Player from './components/objects/Player/Player';
 
 // Initialize core ThreeJS components
 // const scene = new SeedScene();
-// const scene = new CubeScene();
-const scene = new RoomScene();
+const scene = new CubeScene();
+// const scene = new RoomScene();
 const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
 
@@ -58,6 +58,8 @@ var mat = new MeshBasicMaterial({color: 0xdeadbeef});
 var player = new Player(); 
 // player.geometry.computeBoundingBox();
 scene.add(player.sprite);
+player.sprite.position.add(new Vector3(0, 0, 0.1));
+// console.log(player);
 
 // Add this to player class later
 var direction = new Vector3(0, 1, 0);
@@ -65,7 +67,7 @@ var direction = new Vector3(0, 1, 0);
 const detectWallCollisions = (minPoint, maxPoint) => {
 	let noCollisions = true;
     for (let i = 0; i < scene.children.length; i++) {
-		if (scene.children[i] === player) {
+		if (scene.children[i] === player.sprite) {
 			continue;
 		}
 		// player.geometry.computeBoundingBox();
@@ -74,6 +76,7 @@ const detectWallCollisions = (minPoint, maxPoint) => {
 		let minW = scene.children[i].localToWorld(scene.children[i].geometry.boundingBox.min.clone());
 		let maxW = scene.children[i].localToWorld(scene.children[i].geometry.boundingBox.max.clone());
 		let boxW = new Box3(minW, maxW);
+		// console.log(boxW, minPoint, maxPoint);
 		if (boxW.containsPoint(minPoint) || boxW.containsPoint(maxPoint)) {
 			noCollisions = false;
 		}
@@ -91,6 +94,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     var noCollisions = true;
     // var max = player.localToWorld(player.geometry.boundingBox.max.clone());
 	// var min = player.localToWorld(player.geometry.boundingBox.min.clone());
+	player.computeBoundingBox();
 	var max = player.sprite.localToWorld(player.boundingBox.max.clone());
     var min = player.sprite.localToWorld(player.boundingBox.min.clone());
     if (leftPressed) {
@@ -98,15 +102,18 @@ const onAnimationFrameHandler = (timeStamp) => {
     	maxPoint = new Vector3(max.x + 0.1, max.y, max.z);
 		noCollisions = detectWallCollisions(minPoint, maxPoint);
 		if (noCollisions) {
-	    	player.translateX(0.1);
+			player.sprite.translateX(0.1);
+			// player.sprite.center.x += 0.1;
 		}
     }
     if (rightPressed) {
     	minPoint = new Vector3(min.x - 0.1, min.y, max.z);
     	maxPoint = new Vector3(min.x - 0.1, max.y, max.z);
     	noCollisions = detectWallCollisions(minPoint, maxPoint);
+    	// console.log(min, max);
 		if (noCollisions) {
-	    	player.translateX(-0.1);
+			player.sprite.translateX(-0.1);
+			// player.sprite.center.x -= 0.1;
 		}
     }
     if (upPressed) {
@@ -114,7 +121,8 @@ const onAnimationFrameHandler = (timeStamp) => {
     	maxPoint = new Vector3(max.x, max.y + 0.1, max.z);
     	noCollisions = detectWallCollisions(minPoint, maxPoint);
     	if (noCollisions) {
-    		player.translateY(0.1);
+    		player.sprite.translateY(0.1);
+    		// player.sprite.center.y += 0.1;
     	}
     }
     if (downPressed) {
@@ -122,7 +130,8 @@ const onAnimationFrameHandler = (timeStamp) => {
     	maxPoint = new Vector3(max.x, min.y - 0.1, max.z);
     	noCollisions = detectWallCollisions(minPoint, maxPoint);
     	if (noCollisions) {
-    		player.translateY(-0.1);
+    		player.sprite.translateY(-0.1);
+    		// player.sprite.center.y -= 0.1;
     	}
     }
     // let temp = player.position.clone().sub(new Vector3(0, 10, 5));

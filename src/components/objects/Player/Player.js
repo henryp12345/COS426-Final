@@ -1,12 +1,14 @@
-import { Group, Sprite, SpriteMaterial, TextureLoader, Vector3, Vector2 } from 'three';
+import { Group, Sprite, SpriteMaterial, TextureLoader, Vector3, Vector2, Object3D } from 'three';
 
-class Player {
+class Player{
     constructor() {
+
         var spriteMap = new TextureLoader().load( "textures/Sprites/Wizard.png" );
         var spriteMaterial = new SpriteMaterial( { map: spriteMap } );
         var sprite = new Sprite( spriteMaterial );
         this.sprite = sprite;
         var scale = 1;
+        this.scale = scale;
         sprite.scale.set(scale, scale, 1);
         var boundingBox = {min: new Vector3(0, 0, 0), max: new Vector3(0, 0, 0)};
         this.boundingBox = boundingBox;
