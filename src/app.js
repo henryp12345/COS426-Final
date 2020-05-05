@@ -7,10 +7,11 @@
  *
  */
 import { WebGLRenderer, PerspectiveCamera, Vector3, BoxGeometry, Mesh, MeshBasicMaterial, Box3, Plane, Raycaster,
-		Vector2 } from 'three';
+		Vector2, SphereGeometry } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene, CubeScene, RoomScene } from 'scenes';
 import Player from './components/objects/Player/Player';
+import Projectile from './components/objects/Projectiles/Projectile';
 
 // Initialize core ThreeJS components
 // const scene = new SeedScene();
@@ -63,6 +64,9 @@ scene.add(player);
 // Add this to player class later
 var direction = new Vector3(0, 1, 0);
 
+// Projectile array;
+var projectiles = [];
+
 const detectWallCollisions = (minPoint, maxPoint) => {
 	let noCollisions = true;
     for (let i = 0; i < scene.children.length; i++) {
@@ -87,6 +91,12 @@ const onAnimationFrameHandler = (timeStamp) => {
     controls.update();
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
+
+	if (projectiles.length != 0) {
+		projectiles.forEach(updateProjectiles());
+	}
+	
+
 
     var minPoint;
     var maxPoint;
@@ -149,6 +159,10 @@ const windowResizeHandler = () => {
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
 
+const updateProjectiles = (item, index) => {
+	item.mesh.position.add(item.velocity);
+}
+
 const mousemoveHandler = (event) => {
 	// var plane = new Plane(new Vector3(0, 0, 1), 0);
 	// var raycaster = new Raycaster();
@@ -180,6 +194,16 @@ const mousedownHandler = (event) => {
 	// player.position.x = -mouseX;
 	// player.rotateZ(Math.PI / 4);
 	// player.lookAt(new Vector3(0, 1, 0));
+
+	var projectile = new Projectile();
+	projectiles.push(projectile);
+	var geo = new SphereGeometry(2, 8, 6);
+    var mat = new MeshBasicMaterial({color: 0xdeadbeef});
+	var mesh = new Mesh(geo, mat);
+	console.log(projectile);
+	mesh.position.add(new Vector3 (3 , 3 , 0));
+	console.log(mesh);
+	scene.add(mesh);
 }
 
 // Moves whole scene
