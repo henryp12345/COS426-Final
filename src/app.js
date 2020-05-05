@@ -10,6 +10,7 @@ import { WebGLRenderer, PerspectiveCamera, Vector3, BoxGeometry, Mesh, MeshBasic
 		Vector2 } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene, CubeScene, RoomScene } from 'scenes';
+import Player from './components/objects/Player/Player';
 
 // Initialize core ThreeJS components
 // const scene = new SeedScene();
@@ -53,9 +54,10 @@ var mouseY;
 var EPS = 0.1
 var geo = new BoxGeometry(0.5, 0.5, 0.5);
 var mat = new MeshBasicMaterial({color: 0xdeadbeef});
-var player = new Mesh(geo, mat);
-player.geometry.computeBoundingBox();
-scene.add(player);
+// var player = new Mesh(geo, mat);
+var player = new Player(); 
+// player.geometry.computeBoundingBox();
+scene.add(player.sprite);
 
 // Add this to player class later
 var direction = new Vector3(0, 1, 0);
@@ -66,7 +68,8 @@ const detectWallCollisions = (minPoint, maxPoint) => {
 		if (scene.children[i] === player) {
 			continue;
 		}
-		player.geometry.computeBoundingBox();
+		// player.geometry.computeBoundingBox();
+		player.computeBoundingBox();
     	scene.children[i].geometry.computeBoundingBox();
 		let minW = scene.children[i].localToWorld(scene.children[i].geometry.boundingBox.min.clone());
 		let maxW = scene.children[i].localToWorld(scene.children[i].geometry.boundingBox.max.clone());
@@ -86,8 +89,10 @@ const onAnimationFrameHandler = (timeStamp) => {
     var minPoint;
     var maxPoint;
     var noCollisions = true;
-    var max = player.localToWorld(player.geometry.boundingBox.max.clone());
-    var min = player.localToWorld(player.geometry.boundingBox.min.clone());
+    // var max = player.localToWorld(player.geometry.boundingBox.max.clone());
+	// var min = player.localToWorld(player.geometry.boundingBox.min.clone());
+	var max = player.sprite.localToWorld(player.boundingBox.max.clone());
+    var min = player.sprite.localToWorld(player.boundingBox.min.clone());
     if (leftPressed) {
     	minPoint = new Vector3(max.x + 0.1, min.y, max.z);
     	maxPoint = new Vector3(max.x + 0.1, max.y, max.z);
@@ -120,7 +125,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     		player.translateY(-0.1);
     	}
     }
-    let temp = player.position.clone().sub(new Vector3(0, 10, 5));
+    // let temp = player.position.clone().sub(new Vector3(0, 10, 5));
     // camera.position.set(temp.x, temp.y, temp.z);
     // camera.lookAt(player.position.clone());
     window.requestAnimationFrame(onAnimationFrameHandler);
