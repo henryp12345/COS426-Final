@@ -55,9 +55,10 @@ var EPS = 0.1
 var geo = new BoxGeometry(0.5, 0.5, 0.5);
 var mat = new MeshBasicMaterial({color: 0xdeadbeef});
 // var player = new Mesh(geo, mat);
-var player = new Player(scene); 
-// player.geometry.computeBoundingBox();
+var player = new Player(); 
+player.computeBoundingBox();
 scene.add(player);
+// player.sprite.position.add(new Vector3(0, 0, 0.1));
 // console.log(player);
 
 // Add this to player class later
@@ -66,7 +67,7 @@ var direction = new Vector3(0, 1, 0);
 const detectWallCollisions = (minPoint, maxPoint) => {
 	let noCollisions = true;
     for (let i = 0; i < scene.children.length; i++) {
-		if (scene.children[i] === player.sprite) {
+		if (scene.children[i] === player) {
 			continue;
 		}
 		// player.geometry.computeBoundingBox();
@@ -91,16 +92,17 @@ const onAnimationFrameHandler = (timeStamp) => {
     var minPoint;
     var maxPoint;
     var noCollisions = true;
-    var max = player.localToWorld(player.geometry.boundingBox.max.clone());
-	var min = player.localToWorld(player.geometry.boundingBox.min.clone());
-	// var max = player.sprite.localToWorld(player.boundingBox.max.clone());
-    // var min = player.sprite.localToWorld(player.boundingBox.min.clone());
+    // var max = player.localToWorld(player.geometry.boundingBox.max.clone());
+	// var min = player.localToWorld(player.geometry.boundingBox.min.clone());
+	player.computeBoundingBox();
+	var max = player.localToWorld(player.boundingBox.max.clone());
+    var min = player.localToWorld(player.boundingBox.min.clone());
     if (leftPressed) {
     	minPoint = new Vector3(max.x + 0.1, min.y, max.z);
     	maxPoint = new Vector3(max.x + 0.1, max.y, max.z);
 		noCollisions = detectWallCollisions(minPoint, maxPoint);
 		if (noCollisions) {
-			player.sprite.translateX(0.1);
+			player.translateX(0.1);
 			// player.sprite.center.x += 0.1;
 		}
     }
@@ -110,7 +112,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     	noCollisions = detectWallCollisions(minPoint, maxPoint);
     	// console.log(min, max);
 		if (noCollisions) {
-			player.sprite.translateX(-0.1);
+			player.translateX(-0.1);
 			// player.sprite.center.x -= 0.1;
 		}
     }
@@ -119,7 +121,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     	maxPoint = new Vector3(max.x, max.y + 0.1, max.z);
     	noCollisions = detectWallCollisions(minPoint, maxPoint);
     	if (noCollisions) {
-    		player.sprite.translateY(0.1);
+    		player.translateY(0.1);
     		// player.sprite.center.y += 0.1;
     	}
     }
@@ -128,7 +130,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     	maxPoint = new Vector3(max.x, min.y - 0.1, max.z);
     	noCollisions = detectWallCollisions(minPoint, maxPoint);
     	if (noCollisions) {
-    		player.sprite.translateY(-0.1);
+    		player.translateY(-0.1);
     		// player.sprite.center.y -= 0.1;
     	}
     }
