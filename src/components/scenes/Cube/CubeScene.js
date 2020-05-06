@@ -3,7 +3,7 @@ import { Scene, Color, BoxGeometry, MeshBasicMaterial, Mesh, Vector3 } from 'thr
 import { Flower, Land } from 'objects';
 import { BasicLights } from 'lights';
 
-class SeedScene extends Scene {
+class CubeScene extends Scene {
     constructor() {
         // Call parent Scene() constructor
         super();
@@ -18,10 +18,11 @@ class SeedScene extends Scene {
         var cube = new Mesh(geo, mat);
         // this.add(cube);
         var cube2 = new Mesh(geo, mat);
-        cube2.position.add(new Vector3(-1.0, 0, 0));
+        cube2.position.set(-1.0, 0, 0);
         this.add(cube2);
+        cube2.verticesNeedUpdate = true;
 
     }
 }
 
-export default SeedScene;
+export default CubeScene;

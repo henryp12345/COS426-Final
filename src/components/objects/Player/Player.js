@@ -43,8 +43,12 @@ class Player extends THREE.Group {
         this.boundingBox = new THREE.Box3().setFromObject(this);
     }
     
-    reduceHealth() {
-
+    reduceHealth(damageValue) {
+        this.health -= damageValue;
+        if (this.health <= 0) {
+            return true;
+        }
+        return false;
     }
 
 }

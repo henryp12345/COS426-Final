@@ -63,6 +63,9 @@ var player = new Player();
 player.computeBoundingBox();
 scene.add(player);
 
+// let boxHelper = new BoxHelper(scene.children[0]);
+// scene.add(boxHelper);
+
 // Projectile array;
 var friendlyProjectiles = [];
 var enemyProjectiles = [];
@@ -100,17 +103,17 @@ const detectWallCollisions = (dir) => {
 const onAnimationFrameHandler = (timeStamp) => {
     controls.update();
     renderer.render(scene, camera);
-    scene.update && scene.update(timeStamp);
+    // scene.update && scene.update(timeStamp);
 
 	for (let i = 0; i < friendlyProjectiles.length; i++) {
 		friendlyProjectiles[i].updatePosition();
-		friendlyProjectiles[i].checkPlayerCollision();
+		// friendlyProjectiles[i].checkPlayerCollision();
 		friendlyProjectiles[i].checkWallCollision(scene, player);
 	}
 	
 	for (let i = 0; i < enemyProjectiles.length; i++) {
 		enemyProjectiles[i].updatePosition();
-		enemyProjectiles[i].checkPlayerCollision();
+		enemyProjectiles[i].checkPlayerCollision(player);
 		enemyProjectiles[i].checkWallCollision(scene);
 	}
 
