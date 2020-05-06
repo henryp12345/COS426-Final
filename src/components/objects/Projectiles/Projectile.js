@@ -1,4 +1,4 @@
-import { Mesh, SphereGeometry, MeshBasicMaterial, Vector3, Scene, Box3, BoxHelper } from "three";
+import { Mesh, SphereGeometry, MeshBasicMaterial, Vector3, Scene, Box3, BoxHelper, Box3Helper } from "three";
 // import Player from './components/objects/Player/Player';
 
 class Projectile {

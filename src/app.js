@@ -12,6 +12,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene, CubeScene, RoomScene } from 'scenes';
 import Player from './components/objects/Player/Player';
 import Projectile from './components/objects/Projectiles/Projectile';
+import Enemy from './components/objects/Enemy/Enemy';
 
 // Initialize core ThreeJS components
 // const scene = new SeedScene();
@@ -63,6 +64,11 @@ var player = new Player();
 player.computeBoundingBox();
 scene.add(player);
 
+// Sets up the Main Enemy
+var boss = new Enemy();
+boss.computeBoundingBox();
+scene.add(boss);
+
 // let boxHelper = new BoxHelper(scene.children[0]);
 // scene.add(boxHelper);
 
@@ -77,11 +83,19 @@ const detectWallCollisions = (dir) => {
 		if (scene.children[i] === player) {
 			continue;
 		}
-
+		let sceneBox;
 		player.computeBoundingBox();
-    	scene.children[i].geometry.computeBoundingBox();
+		if (scene.children[i] === boss) {
+			boss.computeBoundingBox();
+			sceneBox = boss.boundingBox;
+		}
+		else {
+			scene.children[i].geometry.computeBoundingBox();
+			sceneBox = new Box3().setFromObject(scene.children[i]);
+		}
+    	
 
-		let sceneBox = new Box3().setFromObject(scene.children[i]);
+		
 		let playerBox = player.boundingBox.clone();
 		if (dir == 'left') {
 			playerBox.max.add(new Vector3(0.1, 0, 0));
@@ -119,7 +133,7 @@ const onAnimationFrameHandler = (timeStamp) => {
 
     var minPoint;
     var maxPoint;
-    var noCollisions = true;
+	var noCollisions = true;
     if (leftPressed) {
 		noCollisions = detectWallCollisions('left');
 		if (noCollisions) {

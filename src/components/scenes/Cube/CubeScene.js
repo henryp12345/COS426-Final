@@ -19,7 +19,7 @@ class CubeScene extends Scene {
         // this.add(cube);
         var cube2 = new Mesh(geo, mat);
         cube2.position.set(-1.0, 0, 0);
-        this.add(cube2);
+        // this.add(cube2);
         cube2.verticesNeedUpdate = true;
 
     }
