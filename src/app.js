@@ -70,17 +70,20 @@ boss.computeBoundingBox();
 scene.add(boss);
 
 // let boxHelper = new BoxHelper(scene.children[0]);
+// let boxHelper = new BoxHelper();
+// boxHelper.setFromObject(scene.children[0]);
 // scene.add(boxHelper);
 
 // Projectile array;
 var friendlyProjectiles = [];
 var enemyProjectiles = [];
+var toRemove = [];
 
 
 const detectWallCollisions = (dir) => {
 	let noCollisions = true;
     for (let i = 0; i < scene.children.length; i++) {
-		if (scene.children[i] === player) {
+		if (scene.children[i] === player || scene.children[i].name == 'projectile') {
 			continue;
 		}
 		let sceneBox;
@@ -117,19 +120,35 @@ const detectWallCollisions = (dir) => {
 const onAnimationFrameHandler = (timeStamp) => {
     controls.update();
     renderer.render(scene, camera);
-    // scene.update && scene.update(timeStamp);
+    scene.update && scene.update(timeStamp);
 
+    // Updates friendly projectiles and removes the ones that have collided with wals
+	let temp = [];
 	for (let i = 0; i < friendlyProjectiles.length; i++) {
 		friendlyProjectiles[i].updatePosition();
-		// friendlyProjectiles[i].checkPlayerCollision();
-		friendlyProjectiles[i].checkWallCollision(scene, player);
+		toRemove.push(friendlyProjectiles[i].checkWallCollision(scene, player));
 	}
-	
+	for (let i = 0; i < toRemove.length; i++) {
+		if (!toRemove[i]) {
+			temp.push(friendlyProjectiles[i]);
+		}
+	}
+	friendlyProjectiles = temp;
+	toRemove = [];
+
+	temp = [];
 	for (let i = 0; i < enemyProjectiles.length; i++) {
 		enemyProjectiles[i].updatePosition();
-		enemyProjectiles[i].checkPlayerCollision(player);
-		enemyProjectiles[i].checkWallCollision(scene);
+		toRemove.push(enemyProjectiles[i].checkPlayerCollision(player));
+		toRemove[i] = enemyProjectiles[i].checkWallCollision(scene, player);
 	}
+	for (let i = 0; i < toRemove.length; i++) {
+		if (!toRemove[i]) {
+			temp.push(enemyProjectiles[i]);
+		}
+	}
+	enemyProjectiles = temp;
+	toRemove = [];
 
     var minPoint;
     var maxPoint;
@@ -189,7 +208,7 @@ const mousemoveHandler = (event) => {
 	// let angle2 = direction.angleTo(newDir);
 
 	// player.rotateZ(angle);
-	// player.lookAt(newDir);
+	// player.mesh.lookAt(intersection);
 	// player.direction =  new Vector3(intersection.x, intersection.y, 0);
 }
 
@@ -204,7 +223,7 @@ const mousedownHandler = (event) => {
 
 	let position = player.position.clone();
 	var projectile = new Projectile(position, mousePos.sub(position));
-	friendlyProjectiles.push(projectile);	
+	friendlyProjectiles.push(projectile);
 	scene.add(projectile.mesh);
 }
 

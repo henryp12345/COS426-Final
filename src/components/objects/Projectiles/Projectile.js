@@ -14,7 +14,7 @@ class Projectile {
         this.damage = damage;
         this.boundingBox = new Box3();
         this.computeBoundingBox();
-        this.name = "projectile";
+        this.mesh.name = 'projectile';
     }
 
     updatePosition() {
@@ -30,25 +30,19 @@ class Projectile {
     }
 
     checkWallCollision(scene, player) {
-        for (let i = 0; i < scene.children.length; i++) {
-            if (scene.children[i] === player || scene.children[i].name == "projectile") {
+        let length = scene.children.length;
+        let currentBox = new Box3();
+        for (let i = 0; i < length; i++) {
+            if (scene.children[i] === player || scene.children[i].name == 'projectile') {
                 continue;
             }
-            let currentBox = scene.children[i].geometry.boundingBox;
+            currentBox = new Box3().setFromObject(scene.children[i]);
             if (this.boundingBox.intersectsBox(currentBox)) {
-                // let min = scene.children[i].localToWorld(currentBox.min);
-                // let max = scene.children[i].localToWorld(currentBox.max);
-                // let a = this.mesh.localToWorld(this.boundingBox.min);
-                // let b = this.mesh.localToWorld(this.boundingBox.max);
-                // let boxA = new Box3(min, max);
-                // let boxB = new Box3(a, b);
-                // console.log(boxA.intersectsBox(boxB));
-                // let helper = new BoxHelper(scene.children[i].geometry);
-                // scene.add(currentBox);
-                console.log(scene.children[i]);
                 scene.remove(this.mesh);
+                return true;
             }
         }
+        return false;
     }
 
     computeBoundingBox() {
