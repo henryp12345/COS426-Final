@@ -122,11 +122,12 @@ const onAnimationFrameHandler = (timeStamp) => {
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
 
-    // Updates friendly projectiles and removes the ones that have collided with wals
+    // Updates friendly projectiles and removes the ones that have collided with walls or the boss
 	let temp = [];
 	for (let i = 0; i < friendlyProjectiles.length; i++) {
 		friendlyProjectiles[i].updatePosition();
-		toRemove.push(friendlyProjectiles[i].checkWallCollision(scene, player));
+		toRemove.push(friendlyProjectiles[i].checkEnemyCollision(boss));
+		toRemove[i] = friendlyProjectiles[i].checkWallCollision(scene, player);
 	}
 	for (let i = 0; i < toRemove.length; i++) {
 		if (!toRemove[i]) {

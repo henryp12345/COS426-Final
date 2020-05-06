@@ -45,6 +45,13 @@ class Projectile {
         return false;
     }
 
+    checkEnemyCollision(enemy) {
+        enemy.computeBoundingBox();
+        if (this.boundingBox.intersectsBox(enemy.boundingBox)) {
+            enemy.reduceHealth(this.damage);
+        }
+    }
+
     computeBoundingBox() {
         this.boundingBox = new Box3().setFromObject(this.mesh);
     }
