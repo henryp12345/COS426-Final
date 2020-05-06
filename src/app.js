@@ -37,6 +37,7 @@ document.body.appendChild(canvas);
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.enablePan = false;
+controls.enableRotate = false;
 controls.minDistance = 4;
 controls.maxDistance = 16;
 controls.update();
@@ -47,7 +48,10 @@ var rightPressed = false;
 var upPressed = false;
 var downPressed = false;
 
-// Sets up the mouse position variables
+// Sets up the variables for mouse controls
+var plane = new Plane(new Vector3(0, 0, 1), 0);
+var raycaster = new Raycaster();
+var intersection = new Vector3();
 var mouseX;
 var mouseY;
 
@@ -55,15 +59,9 @@ var mouseY;
 var EPS = 0.1
 var geo = new BoxGeometry(0.5, 0.5, 0.5);
 var mat = new MeshBasicMaterial({color: 0xdeadbeef});
-// var player = new Mesh(geo, mat);
 var player = new Player(); 
-// console.log(player);
 player.computeBoundingBox();
 scene.add(player);
-
-
-// Add this to player class later
-var direction = new Vector3(0, 1, 0);
 
 // Projectile array;
 var friendlyProjectiles = [];
@@ -107,7 +105,7 @@ const onAnimationFrameHandler = (timeStamp) => {
 	for (let i = 0; i < friendlyProjectiles.length; i++) {
 		friendlyProjectiles[i].updatePosition();
 		friendlyProjectiles[i].checkPlayerCollision();
-		friendlyProjectiles[i].checkWallCollision(scene);
+		friendlyProjectiles[i].checkWallCollision(scene, player);
 	}
 	
 	for (let i = 0; i < enemyProjectiles.length; i++) {
@@ -115,8 +113,6 @@ const onAnimationFrameHandler = (timeStamp) => {
 		enemyProjectiles[i].checkPlayerCollision();
 		enemyProjectiles[i].checkWallCollision(scene);
 	}
-	
-
 
     var minPoint;
     var maxPoint;
@@ -145,9 +141,6 @@ const onAnimationFrameHandler = (timeStamp) => {
     		player.translateY(-0.1);
     	}
     }
-    // let temp = player.position.clone().sub(new Vector3(0, 10, 5));
-    // camera.position.set(temp.x, temp.y, temp.z);
-    // camera.lookAt(player.position.clone());
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
@@ -163,44 +156,36 @@ windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
 
 const mousemoveHandler = (event) => {
-	// var plane = new Plane(new Vector3(0, 0, 1), 0);
-	// var raycaster = new Raycaster();
-	// var intersection = new Vector3();
-
 	// mouseX = ( event.clientX / window.innerWidth ) * 2 - 1;
 	// mouseY = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
 	// raycaster.setFromCamera(new Vector2(mouseX, mouseY), camera);
 	// raycaster.ray.intersectPlane(plane, intersection);
 
-	// // player.position.x = intersection.x;
-	// // player.position.y = intersection.y;
-	// let newDir = new Vector3(intersection.x, intersection.y, -1000);
+	// let xDiff = player.direction.x - intersection.x;
+	// let yDiff = player.direction.y - intersection.y;
+	// let angle = Math.atan(yDiff, xDiff);
+	// let newDir = new Vector3(intersection.x, intersection.y, 0);
 	// let angle = direction.angleTo(newDir);
 
 	// let temp = direction.multiplyScalar(-1);
 	// let angle2 = direction.angleTo(newDir);
 
-	// // player.rotateZ(angle);
+	// player.rotateZ(angle);
 	// player.lookAt(newDir);
-	// direction =  newDir;
+	// player.direction =  new Vector3(intersection.x, intersection.y, 0);
 }
 
 const mousedownHandler = (event) => {
-	// var box = new BoxHelper(player);
-	// scene.add(box);
-	// player.position.y = mouseY;
-	// console.log(mouseX, mouseY, player.position);
-	// console.log(player.worldToLocal(new Vector3(mouseX, mouseY, 0)));
-	// player.position.x = -mouseX;
-	// player.rotateZ(Math.PI / 4);
-	// player.lookAt(new Vector3(0, 1, 0));
+	mouseX = ( event.clientX / window.innerWidth ) * 2 - 1;
+	mouseY = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
-	let mouseX = ( event.clientX / window.innerWidth ) * 2 - 1;
-	let mouseY = - ( event.clientY / window.innerHeight ) * 2 + 1;
-	let mousePos = new Vector3(mouseX, mouseY);
+	raycaster.setFromCamera(new Vector2(mouseX, mouseY), camera);
+	raycaster.ray.intersectPlane(plane, intersection);
+
+	let mousePos = new Vector3(intersection.x, intersection.y);
+
 	let position = player.position.clone();
-	console.log(position);
 	var projectile = new Projectile(position, mousePos.sub(position));
 	friendlyProjectiles.push(projectile);	
 	scene.add(projectile.mesh);
