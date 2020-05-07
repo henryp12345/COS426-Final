@@ -8,7 +8,7 @@ class Projectile {
         var mesh = new Mesh(geo, mat);
         mesh.position.copy(position)
         this.mesh = mesh;
-        var velocity = direction.normalize().divideScalar(5);
+        var velocity = direction.normalize().divideScalar(8);
         this.velocity = velocity;
         var damage = 1;
         this.damage = damage;
@@ -26,18 +26,29 @@ class Projectile {
         this.computeBoundingBox();
     }
 
-    checkPlayerCollision(player) {
+    checkPlayerCollision(scene, player) {
+        // array to return, index 0 is hit confirm, 1 is death confirm
+        let bools = [];
+        bools.push(false);
+        bools.push(false);
         player.computeBoundingBox();
         if (this.boundingBox.intersectsBox(player.boundingBox)) {
-            player.reduceHealth(this.damage);
+            // report contact
+            bools[0] = true
+            // reduce enemy hit's health, check for death
+            bools[1] = player.reduceHealth(this.damage);
+            // remove the projectile
+            scene.remove(this.mesh);
+            scene.remove(this.light);
         }
+        return bools;
     }
 
     checkWallCollision(scene, player) {
         let length = scene.children.length;
         let currentBox = new Box3();
         for (let i = 0; i < length; i++) {
-            if (scene.children[i] === player || scene.children[i].name == 'projectile' || scene.children[i].name == 'light') {
+            if (scene.children[i] === player || scene.children[i].name == 'projectile' || scene.children[i].name == 'light' || scene.children[i].name == 'enemy') {
                 continue;
             }
             currentBox = new Box3().setFromObject(scene.children[i]);
@@ -51,16 +62,21 @@ class Projectile {
     }
 
     checkEnemyCollision(scene, enemy) {
-        let death = false;
+        // array to return, index 0 is hit confirm, 1 is death confirm
+        let bools = [];
+        bools.push(false);
+        bools.push(false);
         enemy.computeBoundingBox();
         if (this.boundingBox.intersectsBox(enemy.boundingBox)) {
-            death = enemy.reduceHealth(this.damage);
-        }
-        if (death) {
+            // report contact
+            bools[0] = true
+            // reduce enemy hit's health, check for death
+            bools[1] = enemy.reduceHealth(this.damage);
+            // remove the projectile
             scene.remove(this.mesh);
             scene.remove(this.light);
         }
-        return death;
+        return bools;
     }
 
     computeBoundingBox() {
