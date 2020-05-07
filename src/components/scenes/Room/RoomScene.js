@@ -16,17 +16,17 @@ class SeedScene extends THREE.Scene {
 
         // Add floor
         var floorGeo = new THREE.BoxGeometry(10, 12, 0.5);
-        var floorMat = new THREE.MeshBasicMaterial({
-            map: loader.load('textures/floor.jpg')
+        var floorMat = new THREE.MeshPhongMaterial({
+            map: loader.load('textures/wood.jpg')
         });
         var floor = new THREE.Mesh(floorGeo, floorMat);
-        floor.position.add(new THREE.Vector3(0, 0, 0.51));
+        floor.position.add(new THREE.Vector3(0, 0, 1));
 
         // Add walls
         var wallGeoSide = new THREE.BoxGeometry(0.5, 12, 10.0);
         var wallGeoFront = new THREE.BoxGeometry(12, 0.5, 10.0);
 
-        var wallMat = new THREE.MeshBasicMaterial({
+        var wallMat = new THREE.MeshPhongMaterial({
             map: loader.load('textures/wall.jpg')
         });
         var wallMatTransparent = new THREE.MeshPhongMaterial({
@@ -46,6 +46,24 @@ class SeedScene extends THREE.Scene {
 
         var frontWall = new THREE.Mesh(wallGeoFront, wallMat);
         frontWall.position.add(new THREE.Vector3(0, 5.5, 0));
+
+        // Lights
+        var ambient = new THREE.AmbientLight(0x404040);
+        ambient.name = 'light';
+        var leftBack = new THREE.PointLight(0x404040, 0.5, 0, 2);
+        leftBack.position.set(4.0, 4.0, -2);
+        leftBack.name = 'light';
+        var leftFront = new THREE.PointLight(0x404040, 0.5, 0, 2);
+        leftFront.position.set(4.0, -4.0, -2);
+        leftFront.name = 'light';
+        var rightBack = new THREE.PointLight(0x404040, 0.5, 0, 2);
+        rightBack.position.set(-4.0, -4.0, -2);
+        rightBack.name = 'light';
+        var rightFront = new THREE.PointLight(0x404040, 0.5, 0, 2);
+        rightFront.position.set(-4.0, 4.0, -2);
+        rightFront.name = 'light';
+
+        this.add( leftBack, rightBack, leftFront, rightFront);
 
         this.add(floor);
         this.add(leftWall);

@@ -16,8 +16,8 @@ import Enemy from './components/objects/Enemy/Enemy';
 
 // Initialize core ThreeJS components
 // const scene = new SeedScene();
-const scene = new CubeScene();
-// const scene = new RoomScene();
+// const scene = new CubeScene();
+const scene = new RoomScene();
 const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
 
@@ -255,10 +255,10 @@ const mousedownHandler = (event) => {
 	let mousePos = new Vector3(intersection.x, intersection.y);
 
 	let position = player.position.clone();
-	var projectile = new Projectile(position, mousePos.sub(position));
+	var projectile = new Projectile(position, mousePos.sub(position), 0x228b22);
 	friendlyProjectiles.push(projectile);
 	console.log("here");
-	scene.add(projectile.mesh);
+	scene.add(projectile.mesh, projectile.light);
 }
 
 // Moves whole scene

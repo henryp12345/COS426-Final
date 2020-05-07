@@ -1,10 +1,10 @@
-import { Mesh, SphereGeometry, MeshPhongMaterial, Vector3, Scene, Box3, BoxHelper, Box3Helper } from "three";
+import { Mesh, SphereGeometry, MeshPhongMaterial, Vector3, Scene, Box3, BoxHelper, Box3Helper, PointLight } from "three";
 // import Player from './components/objects/Player/Player';
 
 class Projectile {
-    constructor(position, direction) {
+    constructor(position, direction, color) {
         var geo = new SphereGeometry(0.2, 8, 6);
-        var mat = new MeshPhongMaterial({color: 0xdeadbeef});
+        var mat = new MeshPhongMaterial({color: color});
         var mesh = new Mesh(geo, mat);
         mesh.position.copy(position)
         this.mesh = mesh;
@@ -15,10 +15,14 @@ class Projectile {
         this.boundingBox = new Box3();
         this.computeBoundingBox();
         this.mesh.name = 'projectile';
+        this.light = new PointLight(color);
+        this.light.position.set(position.x, position.y, position.z + 0.25);
+        this.light.name = 'light';
     }
 
     updatePosition() {
         this.mesh.position.add(this.velocity);
+        this.light.position.add(this.velocity);
         this.computeBoundingBox();
     }
 
@@ -33,12 +37,13 @@ class Projectile {
         let length = scene.children.length;
         let currentBox = new Box3();
         for (let i = 0; i < length; i++) {
-            if (scene.children[i] === player || scene.children[i].name == 'projectile') {
+            if (scene.children[i] === player || scene.children[i].name == 'projectile' || scene.children[i].name == 'light') {
                 continue;
             }
             currentBox = new Box3().setFromObject(scene.children[i]);
             if (this.boundingBox.intersectsBox(currentBox)) {
                 scene.remove(this.mesh);
+                scene.remove(this.light);
                 return true;
             }
         }
@@ -53,6 +58,7 @@ class Projectile {
         }
         if (death) {
             scene.remove(this.mesh);
+            scene.remove(this.light);
         }
         return death;
     }
