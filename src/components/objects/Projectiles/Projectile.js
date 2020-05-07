@@ -10,7 +10,7 @@ class Projectile {
         this.mesh = mesh;
         var velocity = direction.normalize().divideScalar(5);
         this.velocity = velocity;
-        var damage = 50;
+        var damage = 1;
         this.damage = damage;
         this.boundingBox = new Box3();
         this.computeBoundingBox();

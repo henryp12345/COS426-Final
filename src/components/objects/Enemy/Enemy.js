@@ -5,6 +5,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import MODEL from './model.obj';
 import MAT from './materials.mtl'
 import {Flower} from 'objects';
+import Projectile from '../Projectiles/Projectile';
 
 class Enemy extends THREE.Group {
     constructor(parent) {
@@ -51,6 +52,12 @@ class Enemy extends THREE.Group {
             return true;
         }
         return false;
+    }
+
+    attack(projectiles) {
+        let shot = new Projectile(this.position, this.direction);
+        projectiles.push(shot);
+        this.parent.add(shot.mesh);
     }
 
 }

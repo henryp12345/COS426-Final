@@ -126,9 +126,13 @@ const onAnimationFrameHandler = (timeStamp) => {
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
 
+	// enemies attack
+	// for (let i = 0; i < enemies.length; i++) {
+	// 	enemies[i].attack(enemyProjectiles);
+	// }
+
     // Updates friendly projectiles and removes the ones that have collided with walls or the boss
 	let temp = [];
-	let tempEnemies = [];
 	let death;
 	for (let i = 0; i < friendlyProjectiles.length; i++) {
 		friendlyProjectiles[i].updatePosition();
