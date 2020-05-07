@@ -83,11 +83,22 @@ var friendlyProjectiles = [];
 var enemyProjectiles = [];
 var toRemove = [];
 
+const clearProjectiles = () => {
+	for (let i = 0; i < friendlyProjectiles.length; i++) {
+		scene.remove(friendlyProjectiles[i].mesh);
+	}
+	for (let i = 0; i < enemyProjectiles.length; i++) {
+		scene.remove(enemyProjectiles[i].mesh);
+	}
+	friendlyProjectiles = [];
+	enemyProjectiles = [];
+	toRemove = [];
+}
 
 const detectWallCollisions = (dir) => {
 	let noCollisions = true;
     for (let i = 0; i < scene.children.length; i++) {
-		if (scene.children[i] === player || scene.children[i].name == 'projectile') {
+		if (scene.children[i] === player || scene.children[i].name == 'projectile' || scene.children[i].name == 'light') {
 			continue;
 		}
 		let sceneBox;
@@ -137,9 +148,10 @@ const onAnimationFrameHandler = (timeStamp) => {
 	for (let i = 0; i < friendlyProjectiles.length; i++) {
 		friendlyProjectiles[i].updatePosition();
 		for (let j = 0; j < enemies.length; j++) {
-			death = friendlyProjectiles[i].checkEnemyCollision(scene, enemies[i]);
+			death = friendlyProjectiles[i].checkEnemyCollision(scene, enemies[j]);
 			if (death) {
 				enemies.splice(i, 1);
+				clearProjectiles();
 				break;
 			}
 		}
@@ -177,25 +189,25 @@ const onAnimationFrameHandler = (timeStamp) => {
     if (leftPressed) {
 		noCollisions = detectWallCollisions('left');
 		if (noCollisions) {
-			player.translateX(0.1);
+			player.translateX(-0.1);
 		}
     }
     if (rightPressed) {
     	noCollisions = detectWallCollisions('right');
 		if (noCollisions) {
-			player.translateX(-0.1);
+			player.translateX(0.1);
 		}
     }
     if (upPressed) {
     	noCollisions = detectWallCollisions('up');
     	if (noCollisions) {
-    		player.translateY(0.1);
+    		player.translateZ(-0.1);
     	}
     }
     if (downPressed) {
     	noCollisions = detectWallCollisions('down');
     	if (noCollisions) {
-    		player.translateY(-0.1);
+    		player.translateZ(0.1);
     	}
     }
     window.requestAnimationFrame(onAnimationFrameHandler);
@@ -245,6 +257,7 @@ const mousedownHandler = (event) => {
 	let position = player.position.clone();
 	var projectile = new Projectile(position, mousePos.sub(position));
 	friendlyProjectiles.push(projectile);
+	console.log("here");
 	scene.add(projectile.mesh);
 }
 

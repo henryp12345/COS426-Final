@@ -1,10 +1,10 @@
-import { Mesh, SphereGeometry, MeshBasicMaterial, Vector3, Scene, Box3, BoxHelper, Box3Helper } from "three";
+import { Mesh, SphereGeometry, MeshPhongMaterial, Vector3, Scene, Box3, BoxHelper, Box3Helper } from "three";
 // import Player from './components/objects/Player/Player';
 
 class Projectile {
     constructor(position, direction) {
         var geo = new SphereGeometry(0.2, 8, 6);
-        var mat = new MeshBasicMaterial({color: 0xdeadbeef});
+        var mat = new MeshPhongMaterial({color: 0xdeadbeef});
         var mesh = new Mesh(geo, mat);
         mesh.position.copy(position)
         this.mesh = mesh;

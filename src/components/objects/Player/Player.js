@@ -11,32 +11,32 @@ class Player extends THREE.Group {
         super();
 
 
-        var cubeGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-        var mat = new THREE.MeshBasicMaterial({color: 0xdeadbeef});
-        var cube = new THREE.Mesh(cubeGeo, mat);
-        this.parent = parent;
-        var cylGeo = new THREE.CylinderGeometry(0.2,0.2,0.4);
-        var cylinder = new THREE.Mesh(cylGeo, mat);
-        cylinder.position.set(0.4, 0, 0);
-        cylinder.rotateZ(Math.PI / 2);
-        this.add(cube, cylinder);
+        // var cubeGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+        // var mat = new THREE.MeshPhongMaterial({color: 0xdeadbeef});
+        // var cube = new THREE.Mesh(cubeGeo, mat);
+        // this.parent = parent;
+        // var cylGeo = new THREE.CylinderGeometry(0.2,0.2,0.4);
+        // var cylinder = new THREE.Mesh(cylGeo, mat);
+        // cylinder.position.set(0.4, 0, 0);
+        // cylinder.rotateZ(Math.PI / 2);
+        // this.add(cube, cylinder);
 
         this.direction = new THREE.Vector3(0, 1, 0);
         this.health = 100;
 
         // This code presumably loads the wizard mesh
-        // const loader = new OBJLoader();
-        // const mtlLoader = new MTLLoader();
-        // this.name = 'wizard';
-        // mtlLoader.setResourcePath('src/components/objects/Player/');
-        // mtlLoader.load(MAT, (material) => {
-        //     material.preload();
-        //     loader.setMaterials(material).load(MODEL, (obj) => {
-        //         this.add(obj);
-        //     });
-        // });
-        // console.log(parent);
-        // parent.addToUpdateList(this);
+        const loader = new OBJLoader();
+        const mtlLoader = new MTLLoader();
+        this.name = 'wizard';
+        mtlLoader.setResourcePath('src/components/objects/Player/');
+        mtlLoader.load(MAT, (material) => {
+            material.preload();
+            loader.setMaterials(material).load(MODEL, (obj) => {
+                this.add(obj);
+            });
+        });
+        this.rotation.set(3 * Math.PI / 2, Math.PI, 0);
+        console.log(this);
     }
 
     computeBoundingBox() {

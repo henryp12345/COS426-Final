@@ -13,7 +13,7 @@ class Enemy extends THREE.Group {
 
         this.parent = parent;
         var cubeGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-        var mat = new THREE.MeshBasicMaterial({color: 0xdeadbeef});
+        var mat = new THREE.MeshPhongMaterial({color: 0xdeadbeef});
         var cube = new THREE.Mesh(cubeGeo, mat);
         cube.position.set(-0.4, 3, 0)
         var cylGeo = new THREE.CylinderGeometry(0.2,0.2,0.4);
@@ -23,7 +23,7 @@ class Enemy extends THREE.Group {
         this.add(cube, cylinder);
 
         this.direction = new THREE.Vector3(0, 1, 0);
-        this.health = 100;
+        this.health = 10;
 
         // This code presumably loads the wizard mesh
         // const loader = new OBJLoader();
@@ -47,8 +47,9 @@ class Enemy extends THREE.Group {
     reduceHealth(damageValue) {
         this.health -= damageValue;
         if (this.health <= 0) {
-            console.log('check');
-            this.parent.remove(this);
+            console.log(this);
+            if (this.parent != null)
+                this.parent.remove(this);
             return true;
         }
         return false;
