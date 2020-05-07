@@ -10,7 +10,7 @@ class Projectile {
         this.mesh = mesh;
         var velocity = direction.normalize().divideScalar(5);
         this.velocity = velocity;
-        var damage = 1;
+        var damage = 50;
         this.damage = damage;
         this.boundingBox = new Box3();
         this.computeBoundingBox();
@@ -45,11 +45,16 @@ class Projectile {
         return false;
     }
 
-    checkEnemyCollision(enemy) {
+    checkEnemyCollision(scene, enemy) {
+        let death = false;
         enemy.computeBoundingBox();
         if (this.boundingBox.intersectsBox(enemy.boundingBox)) {
-            enemy.reduceHealth(this.damage);
+            death = enemy.reduceHealth(this.damage);
         }
+        if (death) {
+            scene.remove(this.mesh);
+        }
+        return death;
     }
 
     computeBoundingBox() {

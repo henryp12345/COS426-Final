@@ -14,7 +14,7 @@ class Player extends THREE.Group {
         var cubeGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
         var mat = new THREE.MeshBasicMaterial({color: 0xdeadbeef});
         var cube = new THREE.Mesh(cubeGeo, mat);
-
+        this.parent = parent;
         var cylGeo = new THREE.CylinderGeometry(0.2,0.2,0.4);
         var cylinder = new THREE.Mesh(cylGeo, mat);
         cylinder.position.set(0.4, 0, 0);
@@ -46,6 +46,7 @@ class Player extends THREE.Group {
     reduceHealth(damageValue) {
         this.health -= damageValue;
         if (this.health <= 0) {
+            this.parent.remove(this);
             return true;
         }
         return false;

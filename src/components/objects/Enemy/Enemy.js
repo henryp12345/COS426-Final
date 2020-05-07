@@ -10,7 +10,7 @@ class Enemy extends THREE.Group {
     constructor(parent) {
         super();
 
-
+        this.parent = parent;
         var cubeGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
         var mat = new THREE.MeshBasicMaterial({color: 0xdeadbeef});
         var cube = new THREE.Mesh(cubeGeo, mat);
@@ -46,6 +46,8 @@ class Enemy extends THREE.Group {
     reduceHealth(damageValue) {
         this.health -= damageValue;
         if (this.health <= 0) {
+            console.log('check');
+            this.parent.remove(this);
             return true;
         }
         return false;

@@ -60,14 +60,18 @@ var mouseY;
 var EPS = 0.1
 var geo = new BoxGeometry(0.5, 0.5, 0.5);
 var mat = new MeshBasicMaterial({color: 0xdeadbeef});
-var player = new Player(); 
+var player = new Player(scene); 
 player.computeBoundingBox();
 scene.add(player);
 
 // Sets up the Main Enemy
-var boss = new Enemy();
+var boss = new Enemy(scene);
 boss.computeBoundingBox();
 scene.add(boss);
+
+// Enemies array;
+var enemies = [];
+enemies.push(boss)
 
 // let boxHelper = new BoxHelper(scene.children[0]);
 // let boxHelper = new BoxHelper();
@@ -124,9 +128,21 @@ const onAnimationFrameHandler = (timeStamp) => {
 
     // Updates friendly projectiles and removes the ones that have collided with walls or the boss
 	let temp = [];
+	let tempEnemies = [];
+	let death;
 	for (let i = 0; i < friendlyProjectiles.length; i++) {
 		friendlyProjectiles[i].updatePosition();
-		toRemove.push(friendlyProjectiles[i].checkEnemyCollision(boss));
+		for (let j = 0; j < enemies.length; j++) {
+			death = friendlyProjectiles[i].checkEnemyCollision(scene, enemies[i]);
+			if (death) {
+				enemies.splice(i, 1);
+				break;
+			}
+		}
+		toRemove.push(death);
+		if (death) {
+			continue;
+		}
 		toRemove[i] = friendlyProjectiles[i].checkWallCollision(scene, player);
 	}
 	for (let i = 0; i < toRemove.length; i++) {
