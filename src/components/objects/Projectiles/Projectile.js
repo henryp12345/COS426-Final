@@ -43,7 +43,7 @@ class Projectile {
             bools[0] = true
             // reduce enemy hit's health, check for death
             bools[1] = player.reduceHealth(this.damage);
-            console.log(player.health);
+
             // remove the projectile
             scene.remove(this.mesh);
             scene.remove(this.light);

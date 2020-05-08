@@ -10,19 +10,8 @@ class Player extends THREE.Group {
     constructor(parent) {
         super();
 
-
-        // var cubeGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-        // var mat = new THREE.MeshPhongMaterial({color: 0xdeadbeef});
-        // var cube = new THREE.Mesh(cubeGeo, mat);
-        // this.parent = parent;
-        // var cylGeo = new THREE.CylinderGeometry(0.2,0.2,0.4);
-        // var cylinder = new THREE.Mesh(cylGeo, mat);
-        // cylinder.position.set(0.4, 0, 0);
-        // cylinder.rotateZ(Math.PI / 2);
-        // this.add(cube, cylinder);
-
         this.direction = new THREE.Vector3(0, 1, 0);
-        this.health = 100;
+        this.health = 10;
 
         // This code presumably loads the wizard mesh
         const loader = new OBJLoader();
@@ -46,7 +35,7 @@ class Player extends THREE.Group {
     
     reduceHealth(damageValue) {
         this.health -= damageValue;
-        if (this.health <= 0) {
+        if (this.health <= 0 && this.parent != null) {
             this.parent.remove(this);
             return true;
         }
