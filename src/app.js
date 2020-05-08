@@ -75,6 +75,8 @@ enemies.push(boss)
 
 // Frame counter for projectile spacing
 var frame = 0;
+// frame counter for special cooldown
+var special = 0;
 // Projectile array;
 var friendlyProjectiles = [];
 var enemyProjectiles = [];
@@ -147,6 +149,9 @@ const onAnimationFrameHandler = (timeStamp) => {
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
 	frame++;
+	if (special < 500) {
+		special++;
+	}
 
 	// enemies attack
 	for (let i = 0; i < enemies.length; i++) {
@@ -291,6 +296,10 @@ const keydownHandler = (event) => {
 	}
 	if (event.key == "a") {
 		leftPressed = true;
+	}
+	if (event.key == " " ) {
+		special = 0;
+		player.specialAttack(friendlyProjectiles, scene);
 	}
 };
 const keyupHandler = (event) => {

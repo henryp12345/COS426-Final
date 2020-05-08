@@ -5,6 +5,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import MODEL from './model.obj';
 import MAT from './materials.mtl'
 import {Flower} from 'objects';
+import Projectile from '../Projectiles/Projectile';
 
 class Player extends THREE.Group {
     constructor(parent) {
@@ -51,6 +52,19 @@ class Player extends THREE.Group {
             return true;
         }
         return false;
+    }
+
+    specialAttack(projectiles, scene) {
+        let direction = new THREE.Vector3(1, 0, 1.12);
+        let position = this.position.clone();
+        let color = 0xdeadbeef;
+        let axis = new THREE.Vector3(0, 1, 0);
+        for (let i = 0; i < 10; i++) {
+            let projectile = new Projectile(position, direction.applyAxisAngle(axis, 2 * Math.PI / 10 * i), true, color);
+            projectile.damage = 2 * projectile.damage;
+            projectiles.push(projectile);
+            scene.add(projectile.mesh);
+        }
     }
 
 }
