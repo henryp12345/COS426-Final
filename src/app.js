@@ -60,8 +60,6 @@ var end = false;
 
 // Sets up the player object
 var EPS = 0.1;
-var geo = new BoxGeometry(0.5, 0.5, 0.5);
-var mat = new MeshBasicMaterial({color: 0xdeadbeef});
 var player = new Player(scene); 
 player.computeBoundingBox();
 scene.add(player);
@@ -75,36 +73,23 @@ scene.add(boss);
 var enemies = [];
 enemies.push(boss)
 
-// let boxHelper = new BoxHelper(scene.children[0]);
-// let boxHelper = new BoxHelper();
-// boxHelper.setFromObject(scene.children[0]);
-// scene.add(boxHelper);
-
 // Frame counter for projectile spacing
 var frame = 0;
 // Projectile array;
 var friendlyProjectiles = [];
 var enemyProjectiles = [];
-var toRemove = [];
+var toKeep = [];
 
-const clearProjectiles = () => {
-	for (let i = 0; i < friendlyProjectiles.length; i++) {
-		scene.remove(friendlyProjectiles[i].mesh);
-		scene.remove(friendlyProjectiles[i].light);
-	}
-	for (let i = 0; i < enemyProjectiles.length; i++) {
-		scene.remove(enemyProjectiles[i].mesh);
-		scene.remove(enemyProjectiles[i].light);
-	}
-	friendlyProjectiles = [];
-	enemyProjectiles = [];
-	toRemove = [];
-}
 
 const endGame = (isLoss) => {
+	// Removes all event handlers
+	// Removes all objects from the scene
+	// Creates a new div element and styles it appropriately
+	// Puts the correct text in the element based on the player winning or losing
 	if (isLoss) {
 		alert("You Lost");
 	} else {
+
 		while(scene.children.length > 0) {
 			scene.remove(scene.children[0]);
 		}
@@ -119,14 +104,15 @@ const endGame = (isLoss) => {
 	}
 }
 
-// ORIGINAL MTL WAS 0.62 three times
 const detectWallCollisions = (dir) => {
 	let noCollisions = true;
     for (let i = 0; i < scene.children.length; i++) {
+    	// Skips over the children in the scene that are the player, other projectiles, or lights
 		if (scene.children[i] === player || scene.children[i].name == 'projectile' || scene.children[i].name == 'light') {
 			continue;
 		}
-		let sceneBox;
+		// Computes the bounding box of the object to check collisions with
+		var sceneBox;
 		player.computeBoundingBox();
 		if (scene.children[i] === boss) {
 			boss.computeBoundingBox();
@@ -137,8 +123,7 @@ const detectWallCollisions = (dir) => {
 			sceneBox = new Box3().setFromObject(scene.children[i]);
 		}
     	
-
-		
+		// Adds a small offset to the bounding box of the player for better collision detection
 		let playerBox = player.boundingBox.clone();
 		if (dir == 'left') {
 			playerBox.max.add(new Vector3(0.1, 0, 0));
@@ -184,7 +169,9 @@ const onAnimationFrameHandler = (timeStamp) => {
 		// check for enemies hit/killed
 		for (let j = 0; j < enemies.length; j++) {
 			death = friendlyProjectiles[i].checkEnemyCollision(scene, enemies[j]);
-			if (death) {
+			console.log(enemies[j].isBoss);
+			if (death[1]) {
+				// If boss is dead, end the game
 				if (enemies[j].isBoss) {
 					endGame(false);
 				}
@@ -192,45 +179,46 @@ const onAnimationFrameHandler = (timeStamp) => {
 				enemies.splice(i, 1);
 				enemyHit = true;
 				break;
+			} else if (death[0]) {
+				enemyHit = true;
+				break;
 			}
 		}
-		if (enemyHit) {
-			toRemove.push(i);
-			continue;
-		}
-		if (!friendlyProjectiles[i].checkWallCollision(scene, player)) {
-			toRemove.push(i);
+		if (!friendlyProjectiles[i].checkWallCollision(scene, player) && !enemyHit) {
+			toKeep.push(i);
 		}
 	}
-	for (let i = 0; i < toRemove.length; i++) {
-		temp.push(friendlyProjectiles[toRemove[i]]);
+	// Removes projectiles that collided with something
+	for (let i = 0; i < toKeep.length; i++) {
+		temp.push(friendlyProjectiles[toKeep[i]]);
 	}
 	friendlyProjectiles = temp;
-	
-	// handling collisions fo enemy projectiles
-	toRemove = [];
+	toKeep = [];
 
 	// Updates enemy projectiles and removes the ones that have collided with walls or the player
 	temp = [];
 	for (let i = 0; i < enemyProjectiles.length; i++) {
 		enemyProjectiles[i].updatePosition();
 		death = enemyProjectiles[i].checkPlayerCollision(scene, player);
-		toRemove.push(death[0]);
 		if (death[0]) {
 			continue;
 		}
 		else if (death[1]) {
-			break;
+			// If the player died, end the game
+			endGame(true);
+		} else {
+			toKeep.push(i);
+			continue;
 		}
-		toRemove[i] = enemyProjectiles[i].checkWallCollision(scene, player);
+		if (!enemyProjectiles[i].checkWallCollision(scene, player)) {
+			toKeep.push(i);
+		}
 	}
-	for (let i = 0; i < toRemove.length; i++) {
-		if (!toRemove[i]) {
-			temp.push(enemyProjectiles[i]);
-		}
+	for (let i = 0; i < toKeep.length; i++) {
+		temp.push(enemyProjectiles[toKeep[i]]);
 	}
 	enemyProjectiles = temp;
-	toRemove = [];
+	toKeep = [];
 
     var minPoint;
     var maxPoint;
@@ -274,26 +262,6 @@ const windowResizeHandler = () => {
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
 
-const mousemoveHandler = (event) => {
-	// mouseX = ( event.clientX / window.innerWidth ) * 2 - 1;
-	// mouseY = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
-	// raycaster.setFromCamera(new Vector2(mouseX, mouseY), camera);
-	// raycaster.ray.intersectPlane(plane, intersection);
-
-	// let xDiff = player.direction.x - intersection.x;
-	// let yDiff = player.direction.y - intersection.y;
-	// let angle = Math.atan(yDiff, xDiff);
-	// let newDir = new Vector3(intersection.x, intersection.y, 0);
-	// let angle = direction.angleTo(newDir);
-
-	// let temp = direction.multiplyScalar(-1);
-	// let angle2 = direction.angleTo(newDir);
-
-	// player.rotateZ(angle);
-	// player.mesh.lookAt(intersection);
-	// player.direction =  new Vector3(intersection.x, intersection.y, 0);
-}
 
 const mousedownHandler = (event) => {
 	mouseX = ( event.clientX / window.innerWidth ) * 2 - 1;
@@ -342,4 +310,3 @@ const keyupHandler = (event) => {
 window.addEventListener('keydown', keydownHandler, false);
 window.addEventListener('keyup', keyupHandler, false);
 window.addEventListener('mousedown', mousedownHandler, false);
-window.addEventListener('mousemove', mousemoveHandler, false);

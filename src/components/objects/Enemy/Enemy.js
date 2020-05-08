@@ -25,7 +25,6 @@ class Enemy extends THREE.Group {
         // This code presumably loads the wizard mesh
         const loader = new OBJLoader();
         const mtlLoader = new MTLLoader();
-        this.name = 'villain';
         mtlLoader.setResourcePath('src/components/objects/Enemy/');
         mtlLoader.load(MAT, (material) => {
             material.preload();
@@ -38,14 +37,14 @@ class Enemy extends THREE.Group {
         this.scale.set(3, 3, 3);
 
         // Sets initial properties
-        this.boss = boss;
+        this.isBoss = boss;
         this.direction = new THREE.Vector3(0, 1, 0);
         this.health = 10;
         var attack;
         // this.position.set(0, 3, 0);
         this.name = 'enemy'
         // boss attack patterns
-        if (this.boss) {
+        if (this.isBoss) {
             
         }
 
@@ -66,9 +65,11 @@ class Enemy extends THREE.Group {
     }
 
     attack(projectiles, player) {
-        let shot = new Projectile(this.position, new THREE.Vector3(0, -1, 0));
-        projectiles.push(shot);
-        this.parent.add(shot.mesh);
+        let shot = new Projectile(this.position, new THREE.Vector3(0, -1, 0), false, 0xff0000);
+        if (this.parent != null) {
+            projectiles.push(shot);
+            this.parent.add(shot.mesh);
+        }
     }
 
 }
