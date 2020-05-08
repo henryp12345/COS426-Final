@@ -12,17 +12,8 @@ class Enemy extends THREE.Group {
         super();
 
         this.parent = parent;
-        // var cubeGeo = new THREE.BoxGeometry(0.5, 0.5, 0.5);
-        // var mat = new THREE.MeshPhongMaterial({color: 0xdeadbeef});
-        // var cube = new THREE.Mesh(cubeGeo, mat);
-        // cube.position.set(-0.4, 0, 0)
-        // var cylGeo = new THREE.CylinderGeometry(0.2,0.2,0.4);
-        // var cylinder = new THREE.Mesh(cylGeo, mat);
-        // cylinder.position.set(0, 0, 0);
-        // cylinder.rotateZ(Math.PI / 2);
-        // this.add(cube, cylinder);
 
-        // This code presumably loads the wizard mesh
+        // This code loads the wizard mesh
         const loader = new OBJLoader();
         const mtlLoader = new MTLLoader();
         mtlLoader.setResourcePath('src/components/objects/Enemy/');
