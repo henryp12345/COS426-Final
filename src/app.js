@@ -59,7 +59,7 @@ var isLoss = true;
 var end = false;
 
 // Sets up the player object
-var EPS = 0.1
+var EPS = 0.1;
 var geo = new BoxGeometry(0.5, 0.5, 0.5);
 var mat = new MeshBasicMaterial({color: 0xdeadbeef});
 var player = new Player(scene); 
@@ -80,6 +80,8 @@ enemies.push(boss)
 // boxHelper.setFromObject(scene.children[0]);
 // scene.add(boxHelper);
 
+// Frame counter for projectile spacing
+var frame = 0;
 // Projectile array;
 var friendlyProjectiles = [];
 var enemyProjectiles = [];
@@ -159,27 +161,36 @@ const onAnimationFrameHandler = (timeStamp) => {
     controls.update();
     renderer.render(scene, camera);
     scene.update && scene.update(timeStamp);
+	frame++;
 
 	// enemies attack
-	// for (let i = 0; i < enemies.length; i++) {
-	// 	enemies[i].attack(enemyProjectiles);
-	// }
+	for (let i = 0; i < enemies.length; i++) {
+		// limiting rate of fire
+		if (frame % 45 == 0) {
+			enemies[i].attack(enemyProjectiles);
+		}
+		if (frame > 150000) {
+			frame = 0;
+		}
+	}
 
     // Updates friendly projectiles and removes the ones that have collided with walls or the boss
 	let temp = [];
 	let death;
 	for (let i = 0; i < friendlyProjectiles.length; i++) {
 		let enemyHit = false;
+		// move projectile
 		friendlyProjectiles[i].updatePosition();
+		// check for enemies hit/killed
 		for (let j = 0; j < enemies.length; j++) {
 			death = friendlyProjectiles[i].checkEnemyCollision(scene, enemies[j]);
 			if (death) {
 				if (enemies[j].isBoss) {
 					endGame(false);
 				}
+				// if enemy died, remove it from the enemies array
 				enemies.splice(i, 1);
 				enemyHit = true;
-				// clearProjectiles();
 				break;
 			}
 		}
@@ -195,13 +206,22 @@ const onAnimationFrameHandler = (timeStamp) => {
 		temp.push(friendlyProjectiles[toRemove[i]]);
 	}
 	friendlyProjectiles = temp;
+	
+	// handling collisions fo enemy projectiles
 	toRemove = [];
 
 	// Updates enemy projectiles and removes the ones that have collided with walls or the player
 	temp = [];
 	for (let i = 0; i < enemyProjectiles.length; i++) {
 		enemyProjectiles[i].updatePosition();
-		toRemove.push(enemyProjectiles[i].checkPlayerCollision(player));
+		death = enemyProjectiles[i].checkPlayerCollision(scene, player);
+		toRemove.push(death[0]);
+		if (death[0]) {
+			continue;
+		}
+		else if (death[1]) {
+			break;
+		}
 		toRemove[i] = enemyProjectiles[i].checkWallCollision(scene, player);
 	}
 	for (let i = 0; i < toRemove.length; i++) {
