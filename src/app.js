@@ -55,6 +55,8 @@ var raycaster = new Raycaster();
 var intersection = new Vector3();
 var mouseX;
 var mouseY;
+var isLoss = true;
+var end = false;
 
 // Sets up the player object
 var EPS = 0.1
@@ -65,7 +67,7 @@ player.computeBoundingBox();
 scene.add(player);
 
 // Sets up the Main Enemy
-var boss = new Enemy(scene);
+var boss = new Enemy(scene, true);
 boss.computeBoundingBox();
 scene.add(boss);
 
@@ -86,15 +88,36 @@ var toRemove = [];
 const clearProjectiles = () => {
 	for (let i = 0; i < friendlyProjectiles.length; i++) {
 		scene.remove(friendlyProjectiles[i].mesh);
+		scene.remove(friendlyProjectiles[i].light);
 	}
 	for (let i = 0; i < enemyProjectiles.length; i++) {
 		scene.remove(enemyProjectiles[i].mesh);
+		scene.remove(enemyProjectiles[i].light);
 	}
 	friendlyProjectiles = [];
 	enemyProjectiles = [];
 	toRemove = [];
 }
 
+const endGame = (isLoss) => {
+	if (isLoss) {
+		alert("You Lost");
+	} else {
+		while(scene.children.length > 0) {
+			scene.remove(scene.children[0]);
+		}
+		setTimeout(function() {
+			var div = document.createElement("DIV");
+			div.innerText = "You Win!";
+			div.style.textAlign = "center";
+			document.body.appendChild(div);
+			div.style.top = "-400px";
+			document.appendChild(div);
+		}, 250);
+	}
+}
+
+// ORIGINAL MTL WAS 0.62 three times
 const detectWallCollisions = (dir) => {
 	let noCollisions = true;
     for (let i = 0; i < scene.children.length; i++) {
@@ -146,29 +169,35 @@ const onAnimationFrameHandler = (timeStamp) => {
 	let temp = [];
 	let death;
 	for (let i = 0; i < friendlyProjectiles.length; i++) {
+		let enemyHit = false;
 		friendlyProjectiles[i].updatePosition();
 		for (let j = 0; j < enemies.length; j++) {
 			death = friendlyProjectiles[i].checkEnemyCollision(scene, enemies[j]);
 			if (death) {
+				if (enemies[j].isBoss) {
+					endGame(false);
+				}
 				enemies.splice(i, 1);
-				clearProjectiles();
+				enemyHit = true;
+				// clearProjectiles();
 				break;
 			}
 		}
-		toRemove.push(death);
-		if (death) {
+		if (enemyHit) {
+			toRemove.push(i);
 			continue;
 		}
-		toRemove[i] = friendlyProjectiles[i].checkWallCollision(scene, player);
+		if (!friendlyProjectiles[i].checkWallCollision(scene, player)) {
+			toRemove.push(i);
+		}
 	}
 	for (let i = 0; i < toRemove.length; i++) {
-		if (!toRemove[i]) {
-			temp.push(friendlyProjectiles[i]);
-		}
+		temp.push(friendlyProjectiles[toRemove[i]]);
 	}
 	friendlyProjectiles = temp;
 	toRemove = [];
 
+	// Updates enemy projectiles and removes the ones that have collided with walls or the player
 	temp = [];
 	for (let i = 0; i < enemyProjectiles.length; i++) {
 		enemyProjectiles[i].updatePosition();
@@ -210,6 +239,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     		player.translateZ(0.1);
     	}
     }
+
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
@@ -255,10 +285,9 @@ const mousedownHandler = (event) => {
 	let mousePos = new Vector3(intersection.x, intersection.y);
 
 	let position = player.position.clone();
-	var projectile = new Projectile(position, mousePos.sub(position), 0x228b22);
+	var projectile = new Projectile(position, mousePos.sub(position), false, 0x228b22);
 	friendlyProjectiles.push(projectile);
-	console.log("here");
-	scene.add(projectile.mesh, projectile.light);
+	scene.add(projectile.mesh);
 }
 
 // Moves whole scene

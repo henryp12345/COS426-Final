@@ -63,7 +63,7 @@ class SeedScene extends THREE.Scene {
         rightFront.position.set(-4.0, 4.0, -2);
         rightFront.name = 'light';
 
-        this.add( leftBack, rightBack, leftFront, rightFront);
+        this.add( ambient, leftBack, rightBack, leftFront, rightFront);
 
         this.add(floor);
         this.add(leftWall);

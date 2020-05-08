@@ -2,7 +2,7 @@ import { Mesh, SphereGeometry, MeshPhongMaterial, Vector3, Scene, Box3, BoxHelpe
 // import Player from './components/objects/Player/Player';
 
 class Projectile {
-    constructor(position, direction, color) {
+    constructor(position, direction, isSpecial, color) {
         var geo = new SphereGeometry(0.2, 8, 6);
         var mat = new MeshPhongMaterial({color: color});
         var mesh = new Mesh(geo, mat);
@@ -15,14 +15,20 @@ class Projectile {
         this.boundingBox = new Box3();
         this.computeBoundingBox();
         this.mesh.name = 'projectile';
-        this.light = new PointLight(color);
-        this.light.position.set(position.x, position.y, position.z + 0.25);
-        this.light.name = 'light';
+        if (isSpecial == true) {
+            this.light = new PointLight(color);
+            this.light.position.set(position.x, position.y, position.z + 0.25);
+            this.light.name = 'light';
+        } else {
+            this.light = null;
+        }
     }
 
     updatePosition() {
         this.mesh.position.add(this.velocity);
-        this.light.position.add(this.velocity);
+        if (this.light != null) {
+            this.light.position.add(this.velocity);
+        }
         this.computeBoundingBox();
     }
 

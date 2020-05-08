@@ -36,6 +36,8 @@ class Player extends THREE.Group {
             });
         });
         this.rotation.set(3 * Math.PI / 2, Math.PI, 0);
+        this.scale.set(3, 3, 3);
+        this.position.set(0, -3.5, -1.1);
         console.log(this);
     }
 
