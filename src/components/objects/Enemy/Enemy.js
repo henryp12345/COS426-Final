@@ -38,6 +38,16 @@ class Enemy extends THREE.Group {
         if (this.isBoss) {
             
         }
+       
+        let direction = this.position.clone();
+        direction.x = Math.random() * 7 - 3.5;
+        console.log(direction);
+        this.futurePosition = direction;
+        console.log(this.futurePosition);
+        let velocity = direction.clone();
+        velocity.sub(this.position);
+        velocity.normalize().multiplyScalar(0.1);
+        this.velocity = velocity;
 
     }
 
@@ -63,6 +73,19 @@ class Enemy extends THREE.Group {
         }
     }
 
+    move() {
+        if (Math.abs(this.position.x) + 0.05 >= Math.abs(this.futurePosition.x) && Math.abs(this.position.x) - 0.05 <= Math.abs(this.futurePosition.x)) {
+            this.futurePosition.x = Math.random() * 7 - 3.5;
+            console.log(this.futurePosition);
+            console.log(this.position); 
+            let direction = this.futurePosition.clone().sub(this.position);
+            direction.normalize().multiplyScalar(0.05);
+            this.velocity = direction;
+        }
+        else {
+            this.position.add(this.velocity);
+        }
+    }
 }
 
 export default Enemy;

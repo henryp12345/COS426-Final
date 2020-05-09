@@ -233,8 +233,10 @@ startButton.onclick = function() {
 			special++;
 		}
 
+		// update enemy position
 		// enemies attack
 		for (let i = 0; i < enemies.length; i++) {
+			enemies[i].move();
 			// limiting rate of fire
 			if (frame % 45 == 0) {
 				enemies[i].attack(enemyProjectiles);
