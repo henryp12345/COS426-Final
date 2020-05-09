@@ -3,7 +3,7 @@ import { Mesh, SphereGeometry, MeshPhongMaterial, Vector3, Scene, Box3, BoxHelpe
 
 class Projectile {
     constructor(position, direction, isSpecial, color) {
-        var geo = new SphereGeometry(0.2, 8, 6);
+        var geo = new SphereGeometry(0.1, 3, 2);
         var mat = new MeshPhongMaterial({color: color});
         var mesh = new Mesh(geo, mat);
         mesh.position.copy(position)

@@ -41,9 +41,7 @@ class Enemy extends THREE.Group {
        
         let direction = this.position.clone();
         direction.x = Math.random() * 7 - 3.5;
-        console.log(direction);
         this.futurePosition = direction;
-        console.log(this.futurePosition);
         let velocity = direction.clone();
         velocity.sub(this.position);
         velocity.normalize().multiplyScalar(0.1);
@@ -73,11 +71,37 @@ class Enemy extends THREE.Group {
         }
     }
 
+    bossSprayAttack(projectiles, player) {
+        let direction = player.position.clone().sub(this.position);
+        let axis = new THREE.Vector3(0, 0, 1);
+        direction.applyAxisAngle(axis, -0.2 * Math.PI);
+        let position = this.position.clone();
+        for (let i = 0; i < 5; i++) {
+            let projectile = new Projectile(position, direction.clone().applyAxisAngle(axis, 0.5 * Math.PI  * i / 5), false);
+            projectiles.push(projectile);
+            this.parent.add(projectile.mesh);
+        }
+    }
+
+    bossAimedAttack(projectiles, player) {
+        let direction = player.position.clone().sub(this.position);
+        let projectile = new Projectile(this.position, direction, true, 0xff0000);
+        projectiles.push(projectile);
+        this.parent.add(projectile.mesh);
+    }
+
+    bossSpecialAttack(projectiles, player) {
+        let direction = player.position.clone().sub(this.position);
+        let projectile = new Projectile(this.position, direction, true, 0xff0000);
+        projectile.mesh.geometry.scale(5, 5, 5);
+        projectile.damage = projectile.damage * 5;
+        projectiles.push(projectile);
+        this.parent.add(projectile.mesh);
+    }
+
     move() {
         if (Math.abs(this.position.x) + 0.05 >= Math.abs(this.futurePosition.x) && Math.abs(this.position.x) - 0.05 <= Math.abs(this.futurePosition.x)) {
             this.futurePosition.x = Math.random() * 7 - 3.5;
-            console.log(this.futurePosition);
-            console.log(this.position); 
             let direction = this.futurePosition.clone().sub(this.position);
             direction.normalize().multiplyScalar(0.05);
             this.velocity = direction;

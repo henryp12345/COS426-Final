@@ -239,7 +239,19 @@ startButton.onclick = function() {
 			enemies[i].move();
 			// limiting rate of fire
 			if (frame % 45 == 0) {
-				enemies[i].attack(enemyProjectiles);
+
+			}
+			if (enemies[i].isBoss) {
+				if ((frame - 15) % 45 == 0) {
+					enemies[i].bossAimedAttack(enemyProjectiles, player);
+				}
+				if (frame % 45 == 0) {
+					enemies[i].bossSprayAttack(enemyProjectiles, player);
+				}
+				if (frame % 400 == 0) {
+					enemies[i].bossSpecialAttack(enemyProjectiles, player);
+				}
+
 			}
 			if (frame > 150000) {
 				frame = 0;
