@@ -31,6 +31,19 @@ class Enemy extends THREE.Group {
         this.isBoss = boss;
         this.direction = new THREE.Vector3(0, 1, 0);
         this.health = 10;
+        // Draws the health bar only if the enemy is the boss
+        if (this.isBoss) {
+            this.healthBar = [];
+            let fraction = 1 / this.health;
+            let geo = new THREE.BoxGeometry(fraction, fraction, 0.2);
+            let mat = new THREE.MeshBasicMaterial({color: 0xFF0000});
+            for (let i = 0; i < this.health; i++) {
+                let currentCube = new THREE.Mesh(geo, mat);
+                currentCube.position.set(-5 + (fraction * i), -3, -4.5);
+                this.healthBar.push(currentCube);
+                this.parent.add(currentCube);
+            }
+        }
         var attack;
         this.name = 'enemy'
         // boss attack patterns
@@ -53,7 +66,11 @@ class Enemy extends THREE.Group {
     }
     
     reduceHealth(damageValue) {
+        let prevHealth = this.health;
         this.health -= damageValue;
+        for (let i = prevHealth - 1; i >= this.health; i--) {
+            this.parent.remove(this.healthBar[i]);
+        }
         if (this.health <= 0) {
             if (this.parent != null)
                 this.parent.remove(this);

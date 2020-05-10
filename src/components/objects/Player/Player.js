@@ -11,8 +11,27 @@ class Player extends THREE.Group {
     constructor(parent) {
         super();
 
+        this.parent = parent;
         this.direction = new THREE.Vector3(0, 1, 0);
-        this.health = 5;
+        this.health = 10;
+
+        // Draws the health bar for the player
+        this.healthBar = [];
+        let fraction = 1 / this.health;
+        let geo = new THREE.BoxGeometry(fraction, fraction, 0.2);
+        let mat = new THREE.MeshBasicMaterial({color: 0x228b22});
+        for (let i = 0; i < this.health; i++) {
+            let currentCube = new THREE.Mesh(geo, mat);
+            currentCube.position.set(5 - (fraction * i), -3, -4.5);
+            this.healthBar.push(currentCube);
+            this.parent.add(currentCube);
+        }
+
+        // Creates the indicator for the special attack
+        let specialGeo = new THREE.BoxGeometry(0.2, 0.2, 0.2);
+        let specialMat = new THREE.MeshBasicMaterial({color: 0x0000FF});
+        this.indicator = new THREE.Mesh(specialGeo, specialMat);
+        this.indicator.position.set(5, -3, -4.1);
 
         // This code presumably loads the wizard mesh
         const loader = new OBJLoader();
@@ -35,7 +54,11 @@ class Player extends THREE.Group {
     }
     
     reduceHealth(damageValue) {
+        let prevHealth = this.health;
         this.health -= damageValue;
+        for (let i = prevHealth - 1; i >= this.health; i--) {
+            this.parent.remove(this.healthBar[i]);
+        }
         if (this.health <= 0 && this.parent != null) {
             this.parent.remove(this);
             return true;
@@ -63,6 +86,7 @@ class Player extends THREE.Group {
                 scene.add(projectile.light);
             }
         }
+        this.parent.remove(this.indicator);
     }
 
 }

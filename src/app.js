@@ -7,7 +7,7 @@
  *
  */
 import { WebGLRenderer, PerspectiveCamera, Vector3, BoxGeometry, Mesh, MeshBasicMaterial, Box3, Plane, Raycaster,
-		Vector2, SphereGeometry, BoxHelper } from 'three';
+		Vector2, SphereGeometry, CanvasTexture } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { SeedScene, CubeScene, RoomScene } from 'scenes';
 import Player from './components/objects/Player/Player';
@@ -27,14 +27,30 @@ div.style.display = 'block';
 div.style.width = window.innerWidth + "px";
 div.style.height = window.innerHeight + "px";
 
-div.innerText = "Red Green Bullets (RGB)"
+div.innerText = "Red Green Bullets"
 div.style.fontFamily = "Verdana";
 div.style.textAlign = "center";
 div.style.fontSize = "40px";
 
 // Adds a line break after the title
-var temp = document.createElement("br");
-div.appendChild(temp);
+var newLine = document.createElement("br");
+div.appendChild(newLine);
+
+// Creates the instructions
+var instructions = document.createElement("DIV");
+instructions.style.fontFamily = "verdana";
+instructions.style.fontSize = "20px";
+instructions.style.position = "relative";
+instructions.style.top = "75px";
+instructions.innerText = "Dodge the red bullets and defeat all enemies to win\n" + 
+						 "Use WASD to move your character\n" + 
+						 "Left click to shoot\n" + 
+						 "When the blue cube appears press the spacebar to unleash your special attack";
+
+div.appendChild(instructions);
+
+// Adds a line break after the instructions
+div.appendChild(newLine);
 
 // Creates the start button and adds it to the screen
 var startButton = document.createElement("BUTTON");
@@ -75,6 +91,7 @@ startButton.onclick = function() {
 	controls.enableDamping = true;
 	controls.enablePan = false;
 	controls.enableRotate = false;
+	controls.enableZoom = false;
 	controls.minDistance = 4;
 	controls.maxDistance = 16;
 	controls.update();
@@ -151,6 +168,10 @@ startButton.onclick = function() {
 		div.style.top = "50%";
 		div.style.left = "35%";
 		div.style.position = "absolute";
+
+		// Creates the instructions
+		var instructions = document.createElement("P");
+		instructions.innerText = "hi";
 
 		// Creates a button to reset the game
 		var button = document.createElement("BUTTON");
@@ -231,6 +252,9 @@ startButton.onclick = function() {
 		frame++;
 		if (special < 500) {
 			special++;
+		} else if (special == 500){
+			scene.add(player.indicator);
+			// console.log("here");
 		}
 
 		// update enemy position
