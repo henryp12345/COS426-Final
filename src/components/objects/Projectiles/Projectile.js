@@ -16,7 +16,7 @@ class Projectile {
         this.computeBoundingBox();
         this.mesh.name = 'projectile';
         if (isSpecial == true) {
-            this.light = new PointLight(color);
+            this.light = new PointLight(color, 0.5);
             this.light.position.set(position.x, position.y, position.z + 0.25);
             this.light.name = 'light';
         } else {
@@ -46,7 +46,9 @@ class Projectile {
 
             // remove the projectile
             scene.remove(this.mesh);
-            scene.remove(this.light);
+            if (this.light != null) {
+                scene.remove(this.light);
+            }
         }
         return bools;
     }
@@ -58,10 +60,13 @@ class Projectile {
             if (scene.children[i] === player || scene.children[i].name == 'projectile' || scene.children[i].name == 'light' || scene.children[i].name == 'enemy') {
                 continue;
             }
+            this.computeBoundingBox();
             currentBox = new Box3().setFromObject(scene.children[i]);
             if (this.boundingBox.intersectsBox(currentBox)) {
                 scene.remove(this.mesh);
-                scene.remove(this.light);
+                if (this.light != null) {
+                    scene.remove(this.light);
+                }
                 return true;
             }
         }
@@ -81,7 +86,9 @@ class Projectile {
             bools[1] = enemy.reduceHealth(this.damage);
             // remove the projectile
             scene.remove(this.mesh);
-            scene.remove(this.light);
+            if (this.light != null) {
+                scene.remove(this.light);
+            }
         }
         return bools;
     }

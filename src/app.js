@@ -304,11 +304,7 @@ startButton.onclick = function() {
 			}
 			else if (death[0]) {
 				continue;
-			} else {
-				toKeep.push(i);
-				continue;
-			}
-			if (!enemyProjectiles[i].checkWallCollision(scene, player)) {
+			} else if (!enemyProjectiles[i].checkWallCollision(scene, player)) {
 				toKeep.push(i);
 			}
 		}

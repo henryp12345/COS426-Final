@@ -24,7 +24,7 @@ class Enemy extends THREE.Group {
             });
         });
         this.rotation.set(3 * Math.PI / 2, 0, 0);
-        this.position.set(0, 3, -1.1);
+        this.position.set(0, 6, -1.1);
         this.scale.set(3, 3, 3);
 
         // Sets initial properties
@@ -32,7 +32,6 @@ class Enemy extends THREE.Group {
         this.direction = new THREE.Vector3(0, 1, 0);
         this.health = 10;
         var attack;
-        // this.position.set(0, 3, 0);
         this.name = 'enemy'
         // boss attack patterns
         if (this.isBoss) {
@@ -77,7 +76,7 @@ class Enemy extends THREE.Group {
         direction.applyAxisAngle(axis, -0.2 * Math.PI);
         let position = this.position.clone();
         for (let i = 0; i < 5; i++) {
-            let projectile = new Projectile(position, direction.clone().applyAxisAngle(axis, 0.5 * Math.PI  * i / 5), false);
+            let projectile = new Projectile(position, direction.clone().applyAxisAngle(axis, 0.5 * Math.PI  * i / 5), false, 0xff0000);
             projectiles.push(projectile);
             this.parent.add(projectile.mesh);
         }
@@ -85,7 +84,7 @@ class Enemy extends THREE.Group {
 
     bossAimedAttack(projectiles, player) {
         let direction = player.position.clone().sub(this.position);
-        let projectile = new Projectile(this.position, direction, true, 0xff0000);
+        let projectile = new Projectile(this.position, direction, false, 0xff0000);
         projectiles.push(projectile);
         this.parent.add(projectile.mesh);
     }
@@ -97,6 +96,7 @@ class Enemy extends THREE.Group {
         projectile.damage = projectile.damage * 5;
         projectiles.push(projectile);
         this.parent.add(projectile.mesh);
+        this.parent.add(projectile.light);
     }
 
     move() {

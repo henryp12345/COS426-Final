@@ -12,7 +12,7 @@ class Player extends THREE.Group {
         super();
 
         this.direction = new THREE.Vector3(0, 1, 0);
-        this.health = 10;
+        this.health = 5;
 
         // This code presumably loads the wizard mesh
         const loader = new OBJLoader();
@@ -49,11 +49,19 @@ class Player extends THREE.Group {
         let color = 0xdeadbeef;
         let axis = new THREE.Vector3(0, 0, 1);
         for (let i = 0; i < 10; i++) {
-            let projectile = new Projectile(position, direction.clone().applyAxisAngle(axis, 0.5 * Math.PI  * i / 11), true, color);
+            var projectile;
+            if (i == 5 || i == 6) {
+                projectile = new Projectile(position, direction.clone().applyAxisAngle(axis, 0.5 * Math.PI  * i / 11), true, 0x228b22);
+            } else {
+                projectile = new Projectile(position, direction.clone().applyAxisAngle(axis, 0.5 * Math.PI  * i / 11), false, 0x228b22);
+            }
             console.log(direction.clone().applyAxisAngle(axis, 0.5 * Math.PI  * i / 10));
             projectile.damage = 2 * projectile.damage;
             projectiles.push(projectile);
             scene.add(projectile.mesh);
+            if (projectile.light != null) {
+                scene.add(projectile.light);
+            }
         }
     }
 
