@@ -117,15 +117,17 @@ startButton.onclick = function() {
 	player.computeBoundingBox();
 	scene.add(player);
 
-	// Sets up the Main Enemy
-	var boss = new Enemy(scene, true);
-	boss.computeBoundingBox();
-	scene.add(boss);
+	
+	// scene.add(boss);
 
 	// Enemies array;
 	var enemies = [];
-	enemies.push(boss)
+	// enemies.push(boss)
 
+	// wave tracker
+	var wave1 = false;
+	var wave2 = false;
+	var wave3 = false;
 	// Frame counter for projectile spacing
 	var frame = 0;
 	// Frame counter for special attack
@@ -207,6 +209,32 @@ startButton.onclick = function() {
 		}
 	}
 
+	// wave 1 builder
+	const firstWave = () => {
+		var position = new Vector3(0, 6, -1.1);
+		var enemy = new Enemy(scene, false, true, false, position);
+		scene.add(enemy);
+		enemies.push(enemy);
+	}
+
+	// wave 2 builder
+	const secondWave = () => {
+		var position = new Vector3(0, 6, -1.1);
+		var enemy = new Enemy(scene, false, false, true, position);
+		scene.add(enemy);
+		enemies.push(enemy);
+	}
+
+	// boss wave builder
+	const bossWave = () => {
+		// Sets up the Main Enemy
+		var boss = new Enemy(scene, true, false, false, new Vector3(0, 6, -1.1));
+		boss.computeBoundingBox();
+		scene.add(boss);
+		enemies.push(boss);
+	}
+
+
 	const detectWallCollisions = (dir) => {
 		let noCollisions = true;
 	    for (let i = 0; i < scene.children.length; i++) {
@@ -217,9 +245,13 @@ startButton.onclick = function() {
 			// Computes the bounding box of the object to check collisions with
 			var sceneBox;
 			player.computeBoundingBox();
-			if (scene.children[i] === boss) {
-				boss.computeBoundingBox();
-				sceneBox = boss.boundingBox;
+			// if (scene.children[i] === boss) {
+			// 	boss.computeBoundingBox();
+			// 	sceneBox = boss.boundingBox;
+			// } else 
+			if (scene.children[i].name == 'enemy') {
+				scene.children[i].computeBoundingBox();
+				sceneBox = scene.children[i].boundingBox;
 			}
 			else {
 				scene.children[i].geometry.computeBoundingBox();
@@ -257,14 +289,16 @@ startButton.onclick = function() {
 			// console.log("here");
 		}
 
+		if (!wave1) {
+			firstWave();
+			wave1 = true;
+		}
+
 		// update enemy position
 		// enemies attack
 		for (let i = 0; i < enemies.length; i++) {
 			enemies[i].move();
 			// limiting rate of fire
-			if (frame % 45 == 0) {
-
-			}
 			if (enemies[i].isBoss) {
 				if ((frame - 15) % 45 == 0) {
 					enemies[i].bossAimedAttack(enemyProjectiles, player);
@@ -275,7 +309,8 @@ startButton.onclick = function() {
 				if (frame % 400 == 0) {
 					enemies[i].bossSpecialAttack(enemyProjectiles, player);
 				}
-
+			} else if (frame % 45 == 0) {
+				enemies[i].attack(enemyProjectiles);
 			}
 			if (frame > 150000) {
 				frame = 0;
@@ -308,6 +343,16 @@ startButton.onclick = function() {
 			}
 			if (!friendlyProjectiles[i].checkWallCollision(scene, player) && !enemyHit) {
 				toKeep.push(i);
+			}
+			if (enemies.length == 0) {
+				if (!wave2) {
+					secondWave();
+					wave2 = true;
+				}
+				else if (!wave3) {
+					bossWave();
+					wave3 = true;
+				}
 			}
 		}
 		// Removes projectiles that collided with something

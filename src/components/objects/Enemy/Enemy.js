@@ -8,31 +8,59 @@ import {Flower} from 'objects';
 import Projectile from '../Projectiles/Projectile';
 
 class Enemy extends THREE.Group {
-    constructor(parent, boss) {
+    constructor(parent, boss, wave1, wave2, position) {
         super();
 
         this.parent = parent;
-
-        // This code loads the wizard mesh
-        const loader = new OBJLoader();
-        const mtlLoader = new MTLLoader();
-        mtlLoader.setResourcePath('src/components/objects/Enemy/');
-        mtlLoader.load(MAT, (material) => {
-            material.preload();
-            loader.setMaterials(material).load(MODEL, (obj) => {
-                this.add(obj);
+        if (wave1) {
+            const loader = new OBJLoader();
+            const mtlLoader = new MTLLoader();
+            mtlLoader.setResourcePath('src/components/objects/Enemy/Enemy1');
+            mtlLoader.load(MAT, (material) => {
+                material.preload();
+                loader.setMaterials(material).load(MODEL, (obj) => {
+                    this.add(obj);
+                });
             });
-        });
-        this.rotation.set(3 * Math.PI / 2, 0, 0);
-        this.position.set(0, 6, -1.1);
-        this.scale.set(3, 3, 3);
+            this.rotation.set(3 * Math.PI / 2, 0, 0);
+            this.position.set(position.x, position.y, position.z);
+            this.scale.set(3, 3, 3);
+            this.health = 10;
+        }
+        else if (wave2) {
+            const loader = new OBJLoader();
+            const mtlLoader = new MTLLoader();
+            mtlLoader.setResourcePath('src/components/objects/Enemy/');
+            mtlLoader.load(MAT, (material) => {
+                material.preload();
+                loader.setMaterials(material).load(MODEL, (obj) => {
+                    this.add(obj);
+                });
+            });
+            this.rotation.set(3 * Math.PI / 2, 0, 0);
+            this.position.set(position.x, position.y, position.z);
+            this.scale.set(3, 3, 3);
+            this.health = 10;
+        }
+        else if (boss) {
+            // This code loads the wizard mesh
+            const loader = new OBJLoader();
+            const mtlLoader = new MTLLoader();
+            mtlLoader.setResourcePath('src/components/objects/Enemy/');
+            mtlLoader.load(MAT, (material) => {
+                material.preload();
+                loader.setMaterials(material).load(MODEL, (obj) => {
+                    this.add(obj);
+                });
+            });
+            this.rotation.set(3 * Math.PI / 2, 0, 0);
+            this.position.set(position.x, position.y, position.z);
+            this.scale.set(3, 3, 3);
+            this.health = 10;
+        }
 
-        // Sets initial properties
-        this.isBoss = boss;
-        this.direction = new THREE.Vector3(0, 1, 0);
-        this.health = 10;
         // Draws the health bar only if the enemy is the boss
-        if (this.isBoss) {
+        if (boss) {
             this.healthBar = [];
             let fraction = 1 / this.health;
             let geo = new THREE.BoxGeometry(fraction, fraction, 0.2);
@@ -44,12 +72,12 @@ class Enemy extends THREE.Group {
                 this.parent.add(currentCube);
             }
         }
-        var attack;
+
+        // Sets initial properties
+        this.isBoss = boss;
+        this.direction = new THREE.Vector3(0, 1, 0);
+        
         this.name = 'enemy'
-        // boss attack patterns
-        if (this.isBoss) {
-            
-        }
        
         let direction = this.position.clone();
         direction.x = Math.random() * 7 - 3.5;
@@ -68,8 +96,10 @@ class Enemy extends THREE.Group {
     reduceHealth(damageValue) {
         let prevHealth = this.health;
         this.health -= damageValue;
-        for (let i = prevHealth - 1; i >= this.health; i--) {
-            this.parent.remove(this.healthBar[i]);
+        if (this.isBoss) {
+            for (let i = prevHealth - 1; i >= this.health; i--) {
+                this.parent.remove(this.healthBar[i]);
+            }
         }
         if (this.health <= 0) {
             if (this.parent != null)
