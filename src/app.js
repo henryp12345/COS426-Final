@@ -215,6 +215,7 @@ startButton.onclick = function() {
 		var enemy = new Enemy(scene, false, true, false, position);
 		scene.add(enemy);
 		enemies.push(enemy);
+
 		position.x = -4;
 		var enemy = new Enemy(scene, false, true, false, position);
 		scene.add(enemy);
@@ -227,11 +228,13 @@ startButton.onclick = function() {
 		var enemy = new Enemy(scene, false, false, true, position);
 		scene.add(enemy);
 		enemies.push(enemy);
-		position = new Vector3(0, 4, -1.1);
+
+		position.y = 4
 		var enemy = new Enemy(scene, false, false, true, position);
 		scene.add(enemy);
 		enemies.push(enemy);
-		position = new Vector3(0, 2, -1.1);
+
+		position.y = 2
 		var enemy = new Enemy(scene, false, false, true, position);
 		scene.add(enemy);
 		enemies.push(enemy);
@@ -346,7 +349,9 @@ startButton.onclick = function() {
 						endGame(false);
 					}
 					// if enemy died, remove it from the enemies array
-					enemies.splice(i, 1);
+					console.log(enemies.length);
+					enemies.splice(j, 1);
+					console.log(enemies.length);
 					enemyHit = true;
 					break;
 				} else if (death[0]) {

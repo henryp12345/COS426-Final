@@ -15,6 +15,7 @@ class Enemy extends THREE.Group {
         super();
 
         this.parent = parent;
+        this.health = 10;
         if (wave1) {
             const loader = new OBJLoader();
             const mtlLoader = new MTLLoader();
@@ -49,7 +50,6 @@ class Enemy extends THREE.Group {
             this.rotation.set(3 * Math.PI / 2, 0, 0);
             this.position.set(position.x, position.y, position.z);
             this.scale.set(3, 3, 3);
-            this.health = 10;
         }
         else if (boss) {
             // This code loads the wizard mesh
@@ -65,7 +65,6 @@ class Enemy extends THREE.Group {
             this.rotation.set(3 * Math.PI / 2, 0, 0);
             this.position.set(position.x, position.y, position.z);
             this.scale.set(3, 3, 3);
-            this.health = 10;
             this.direction = new THREE.Vector3(0, 1, 0);
         }
 
