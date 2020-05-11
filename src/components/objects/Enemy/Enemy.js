@@ -3,8 +3,11 @@ import * as THREE from 'three';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import MODEL from './model.obj';
+import MODEL1 from './Enemy1/model.obj'
+import MODEL2 from './Enemy2/smeyeball.obj'
 import MAT from './materials.mtl'
-import {Flower} from 'objects';
+import MAT1 from './Enemy1/materials.mtl'
+import MAT2 from './Enemy2/smeyeball.mtl'
 import Projectile from '../Projectiles/Projectile';
 
 class Enemy extends THREE.Group {
@@ -16,24 +19,30 @@ class Enemy extends THREE.Group {
             const loader = new OBJLoader();
             const mtlLoader = new MTLLoader();
             mtlLoader.setResourcePath('src/components/objects/Enemy/Enemy1');
-            mtlLoader.load(MAT, (material) => {
+            mtlLoader.load(MAT1, (material) => {
                 material.preload();
-                loader.setMaterials(material).load(MODEL, (obj) => {
+                loader.setMaterials(material).load(MODEL1, (obj) => {
                     this.add(obj);
                 });
             });
-            this.rotation.set(3 * Math.PI / 2, 0, 0);
             this.position.set(position.x, position.y, position.z);
-            this.scale.set(3, 3, 3);
-            this.health = 10;
+            if (this.position.x > 0) {
+                this.rotation.set(3 * Math.PI / 2, 0, 0);
+            } else {
+                this.rotation.set(3 * Math.PI / 2, Math.PI, 0);
+            }
+
+            this.scale.set(2, 2, 2);
+            this.health = 5;
+            this.direction = new THREE.Vector3(0, 1, 0);
         }
         else if (wave2) {
             const loader = new OBJLoader();
             const mtlLoader = new MTLLoader();
             mtlLoader.setResourcePath('src/components/objects/Enemy/');
-            mtlLoader.load(MAT, (material) => {
+            mtlLoader.load(MAT2, (material) => {
                 material.preload();
-                loader.setMaterials(material).load(MODEL, (obj) => {
+                loader.setMaterials(material).load(MODEL2, (obj) => {
                     this.add(obj);
                 });
             });
@@ -57,6 +66,7 @@ class Enemy extends THREE.Group {
             this.position.set(position.x, position.y, position.z);
             this.scale.set(3, 3, 3);
             this.health = 10;
+            this.direction = new THREE.Vector3(0, 1, 0);
         }
 
         // Draws the health bar only if the enemy is the boss
@@ -75,17 +85,30 @@ class Enemy extends THREE.Group {
 
         // Sets initial properties
         this.isBoss = boss;
+        this.wave1 = wave1;
+        this.wave2 = wave2;
         this.direction = new THREE.Vector3(0, 1, 0);
         
         this.name = 'enemy'
-       
-        let direction = this.position.clone();
-        direction.x = Math.random() * 7 - 3.5;
-        this.futurePosition = direction;
-        let velocity = direction.clone();
-        velocity.sub(this.position);
-        velocity.normalize().multiplyScalar(0.1);
-        this.velocity = velocity;
+        
+        if (this.wave1) {
+            let direction = this.position.clone();
+            direction.y = Math.random() * 6;
+            this.futurePosition = direction;
+            let velocity = direction.clone();
+            velocity.sub(this.position);
+            velocity.normalize().multiplyScalar(0.1);
+            this.velocity = velocity;
+        }
+        else {
+            let direction = this.position.clone();
+            direction.x = Math.random() * 7 - 3.5;
+            this.futurePosition = direction;
+            let velocity = direction.clone();
+            velocity.sub(this.position);
+            velocity.normalize().multiplyScalar(0.1);
+            this.velocity = velocity;
+        }
 
     }
 
@@ -110,10 +133,23 @@ class Enemy extends THREE.Group {
     }
 
     attack(projectiles, player) {
-        let shot = new Projectile(this.position, new THREE.Vector3(0, -1, 0), false, 0xff0000);
-        if (this.parent != null) {
-            projectiles.push(shot);
-            this.parent.add(shot.mesh);
+        if (this.wave1) {
+            let aim = new THREE.Vector3(1, 1, 0);
+            let axis = new THREE.Vector3(0 , 0 , 1);
+            for (let i = 0; i < 4; i++) {
+                let shot = new Projectile(this.position, aim.clone().applyAxisAngle(axis, i * 0.5 * Math.PI), false, 0xff0000);
+                if (this.parent != null) {
+                    projectiles.push(shot);
+                    this.parent.add(shot.mesh);
+                }
+            }
+        }
+        else if (this.wave2) {
+            let shot = new Projectile(this.position, new THREE.Vector3(0, -1, 0), false, 0xff0000);
+            if (this.parent != null) {
+                projectiles.push(shot);
+                this.parent.add(shot.mesh);
+            }
         }
     }
 
@@ -147,14 +183,28 @@ class Enemy extends THREE.Group {
     }
 
     move() {
-        if (Math.abs(this.position.x) + 0.05 >= Math.abs(this.futurePosition.x) && Math.abs(this.position.x) - 0.05 <= Math.abs(this.futurePosition.x)) {
-            this.futurePosition.x = Math.random() * 7 - 3.5;
-            let direction = this.futurePosition.clone().sub(this.position);
-            direction.normalize().multiplyScalar(0.05);
-            this.velocity = direction;
+        if (this.wave1) {
+            if (Math.abs(this.position.y) + 0.05 >= Math.abs(this.futurePosition.y) && Math.abs(this.position.y) - 0.05 <= Math.abs(this.futurePosition.y)) {
+                this.futurePosition.y = Math.random() * 6 - 1;
+                let direction = this.futurePosition.clone().sub(this.position);
+                direction.normalize().multiplyScalar(0.05);
+                this.velocity = direction;
+                
+            }
+            else {
+                this.position.add(this.velocity);
+            }
         }
         else {
-            this.position.add(this.velocity);
+            if (Math.abs(this.position.x) + 0.05 >= Math.abs(this.futurePosition.x) && Math.abs(this.position.x) - 0.05 <= Math.abs(this.futurePosition.x)) {
+                this.futurePosition.x = Math.random() * 7 - 3.5;
+                let direction = this.futurePosition.clone().sub(this.position);
+                direction.normalize().multiplyScalar(0.05);
+                this.velocity = direction;
+            }
+            else {
+                this.position.add(this.velocity);
+            }
         }
     }
 }

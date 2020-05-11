@@ -78,7 +78,6 @@ class Player extends THREE.Group {
             } else {
                 projectile = new Projectile(position, direction.clone().applyAxisAngle(axis, 0.5 * Math.PI  * i / 11), false, 0x228b22);
             }
-            console.log(direction.clone().applyAxisAngle(axis, 0.5 * Math.PI  * i / 10));
             projectile.damage = 2 * projectile.damage;
             projectiles.push(projectile);
             scene.add(projectile.mesh);

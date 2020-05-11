@@ -211,7 +211,11 @@ startButton.onclick = function() {
 
 	// wave 1 builder
 	const firstWave = () => {
-		var position = new Vector3(0, 6, -1.1);
+		var position = new Vector3(4, 3, -1.1);
+		var enemy = new Enemy(scene, false, true, false, position);
+		scene.add(enemy);
+		enemies.push(enemy);
+		position.x = -4;
 		var enemy = new Enemy(scene, false, true, false, position);
 		scene.add(enemy);
 		enemies.push(enemy);
@@ -220,6 +224,14 @@ startButton.onclick = function() {
 	// wave 2 builder
 	const secondWave = () => {
 		var position = new Vector3(0, 6, -1.1);
+		var enemy = new Enemy(scene, false, false, true, position);
+		scene.add(enemy);
+		enemies.push(enemy);
+		position = new Vector3(0, 4, -1.1);
+		var enemy = new Enemy(scene, false, false, true, position);
+		scene.add(enemy);
+		enemies.push(enemy);
+		position = new Vector3(0, 2, -1.1);
 		var enemy = new Enemy(scene, false, false, true, position);
 		scene.add(enemy);
 		enemies.push(enemy);
@@ -289,6 +301,7 @@ startButton.onclick = function() {
 			// console.log("here");
 		}
 
+		// initializes first wave
 		if (!wave1) {
 			firstWave();
 			wave1 = true;
