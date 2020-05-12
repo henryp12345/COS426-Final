@@ -2,6 +2,8 @@ import * as Dat from 'dat.gui';
 import * as THREE from 'three';
 import { Flower, Land } from 'objects';
 import { BasicLights } from 'lights';
+import wood from './wood.jpg';
+import wall from './wall.jpg';
 
 class SeedScene extends THREE.Scene {
     constructor() {
@@ -17,7 +19,7 @@ class SeedScene extends THREE.Scene {
         // Add floor
         var floorGeo = new THREE.BoxGeometry(20, 24, 0.5);
         var floorMat = new THREE.MeshPhongMaterial({
-            map: loader.load('textures/wood.jpg')
+            map: loader.load(wood)
         });
         var floor = new THREE.Mesh(floorGeo, floorMat);
         floor.position.add(new THREE.Vector3(0, 0, 1));
@@ -27,7 +29,7 @@ class SeedScene extends THREE.Scene {
         var wallGeoFront = new THREE.BoxGeometry(24, 0.5, 10.0);
 
         var wallMat = new THREE.MeshPhongMaterial({
-            map: loader.load('textures/wall.jpg')
+            map: loader.load(wall)
         });
         var wallMatTransparent = new THREE.MeshPhongMaterial({
             color: 0x000000,

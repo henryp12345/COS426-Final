@@ -4,10 +4,10 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 import MODEL from './model.obj';
 import MODEL1 from './Enemy1/model.obj'
-import MODEL2 from './Enemy2/smeyeball.obj'
+import MODEL2 from './Enemy2/eyeballnew.obj'
 import MAT from './materials.mtl'
 import MAT1 from './Enemy1/materials.mtl'
-import MAT2 from './Enemy2/smeyeball.mtl'
+import MAT2 from './Enemy2/eyeballnew.mtl'
 import Projectile from '../Projectiles/Projectile';
 
 class Enemy extends THREE.Group {
@@ -40,16 +40,16 @@ class Enemy extends THREE.Group {
         else if (wave2) {
             const loader = new OBJLoader();
             const mtlLoader = new MTLLoader();
-            mtlLoader.setResourcePath('src/components/objects/Enemy/');
+            mtlLoader.setResourcePath('src/components/objects/Enemy/Enemy2');
             mtlLoader.load(MAT2, (material) => {
                 material.preload();
                 loader.setMaterials(material).load(MODEL2, (obj) => {
                     this.add(obj);
                 });
             });
-            this.rotation.set(3 * Math.PI / 2, 0, 0);
+            this.rotation.set(0, 0, Math.PI);
             this.position.set(position.x, position.y, position.z);
-            this.scale.set(3, 3, 3);
+            this.scale.set(1, 1, 1);
         }
         else if (boss) {
             // This code loads the wizard mesh
