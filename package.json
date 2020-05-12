@@ -1,19 +1,15 @@
 {
-  "name": "bullet-dodging-game",
+  "name": "red-green-bullets",
   "repository": "COS426-Final",
-  "version": "0.1.0",
-  "title": "Sprite-based Bullet Hell",
+  "version": "1.0.0",
+  "title": "Red Green Bullets",
   "description": "Dodge bullets, beat boss",
   "keywords": [
     "Princeton",
     "graphics",
     "three.js",
     "COS 426",
-    "ivy league",
-    "keyword1",
-    "keyword2",
-    "...",
-    "this last entry CANNOT have a comma after it ->"
+    "Bullet hell"
   ],
   "scripts": {
     "start": "webpack-dev-server --mode development --output-public-path \"\"",
